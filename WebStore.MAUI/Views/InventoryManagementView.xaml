@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WebStore.MAUI.Views.InventoryManagementView"
+             Title="InventoryManagementView"
+             NavigatedTo="ContentPage_NavigatedTo"
+             NavigatedFrom="ContentPage_NavigatedFrom">
+    <VerticalStackLayout>
+        <ListView
+            ItemsSource="{Binding Items}"
+            SelectedItem="{Binding SelectedItem}"
+            >
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="10*"/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Column="0" Text="{Binding ID, StringFormat='[{0}]'}"/>
+                            <Label Grid.Column="1" Text="{Binding Name}"/>
+                            <Label Grid.Column="2" Text="{Binding Description}"/>
+                            <Label Grid.Column="3" Text="{Binding Price, StringFormat='{}{0:C}'}"/>
+                            <Label Grid.Column="4" Text="{Binding Quantity}"/>
+                            
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        <Button
+            Text="Add New Item"
+            Clicked="AddClicked"
+            />
+        <Button
+            Text="Edit Selected Item"
+            Clicked="EditClicked"
+            />
+        <Button
+            Text="Delete Selected Item"
+            Clicked="DeleteClicked"
+            />
+        <Button
+            Text="Back"
+            Clicked="InvBack"
+            />
+    </VerticalStackLayout>
+</ContentPage>

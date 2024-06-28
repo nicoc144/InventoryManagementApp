@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WebStore.MAUI.Views.ItemView"
+             Title="ItemView"
+             NavigatedTo="ContentPage_NavigatedTo">
+    <VerticalStackLayout>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0" Text="Name"/>
+            <Entry Grid.Column="1" Text="{Binding Name}"/>
+            <Label Grid.Column="2" Text="Description"/>
+            <Entry Grid.Column="3" Text="{Binding Description}"/>
+            <Label Grid.Column="4" Text="Price"/>
+            <Entry Grid.Column="5" Text="{Binding Price}"/>
+            <Label Grid.Column="6" Text="Quantity"/>
+            <Entry Grid.Column="7" Text="{Binding Quantity}"/>
+
+        </Grid>
+
+        <Button Text="Ok" Clicked="OkClicked"/>
+        <Button Text="Cancel" Clicked="CancelClicked"/>
+        
+    </VerticalStackLayout>
+</ContentPage>
