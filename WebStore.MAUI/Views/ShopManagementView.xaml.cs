@@ -17,6 +17,7 @@ public partial class ShopManagementView : ContentPage
 
     private void ContentPage_NavigatedTo(object sender, NavigatedToEventArgs e)
     {
+        (BindingContext as ShopManagementViewModel).SetCartByID();
         (BindingContext as ShopManagementViewModel).RefreshItems();
     }
 
@@ -24,5 +25,10 @@ public partial class ShopManagementView : ContentPage
     {
         (BindingContext as ShopManagementViewModel).UpdateItemView(); //updates the view for SpecifyQuantView with the correct
                                                                       //data for the item
+    }
+
+    private void MyShoppingCartsClicked(object sender, EventArgs e)
+    {
+        Shell.Current.GoToAsync("//CartManagementView");
     }
 }

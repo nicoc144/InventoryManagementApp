@@ -25,7 +25,7 @@ namespace WebStore.MAUI.ViewModels
                 return ItemServiceProxy.Current?.Items?.Select(i => new ItemViewModel(i)).ToList() ?? new List<ItemViewModel>();
             }
         }
-        public ItemViewModel SelectedItem {  get; set; }
+        public ItemViewModel SelectedItem {  get; set; } 
         public InventoryManagementViewModel()
         {
 

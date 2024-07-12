@@ -35,6 +35,20 @@
         ContentTemplate="{DataTemplate views:SpecifyQuantView}"
         Route="AddToCart" />
 
+    <ShellContent
+        Title="Tax Configuration"
+        ContentTemplate="{DataTemplate views:TaxConfigView}"
+        Route="TaxConfig" />
+
+    <ShellContent
+        Title="Cart Management View"
+        ContentTemplate="{DataTemplate views:CartManagementView}"
+        Route="CartManagementView" />
+
+    <ShellContent
+        Title="Cart View"
+        ContentTemplate="{DataTemplate views:CartView}"
+        Route="CartView" />
 
 
 </Shell>

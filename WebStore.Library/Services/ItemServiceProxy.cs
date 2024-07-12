@@ -9,11 +9,15 @@ using WebStore.Library.Models;
 namespace WebStore.Library.Services
 {
     public class ItemServiceProxy //represents a list of items
-    {
+    { 
+
         private ItemServiceProxy()
         { //private constructor, only a function inside the class can create an instance of itself
-            items = new List<Item> { new Item { Name = "Bread", ID = 1, Description = "DefaultDesc", Price = 2.32m, Quantity = 23},
-                new Item { Name = "Milk", ID = 2, Description = "DefaultDesc" , Price = 1.28m, Quantity = 12} };
+            items = new List<Item> { new Item { Name = "MacBook Pro", ID = 1, Description = "Apple 13in Macbook 512GB SSD Silver", Price = 1599.00m, Quantity = 23, IsBOGO = false},
+                new Item { Name = "I Phone 15 Pro", ID = 2, Description = "Apple I Phone 15 Pro Black" , Price = 849.00m, Quantity = 12, IsBOGO = false},
+                new Item { Name = "Airpods Pro", ID = 3, Description = "Apple Airpods Pro 2" , Price = 124.00m, Quantity = 54, IsBOGO = false}
+            };
+
         }
 
         //use constructor below this if u want to initilize an empty list

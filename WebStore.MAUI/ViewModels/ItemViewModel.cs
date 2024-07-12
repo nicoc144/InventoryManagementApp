@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using WebStore.Library.Models;
 using WebStore.Library.Services;
+using Windows.Devices.Bluetooth.Advertisement;
 
 namespace WebStore.MAUI.ViewModels
 {
@@ -19,6 +20,8 @@ namespace WebStore.MAUI.ViewModels
 
         public Item? Item; //this (was) private to keep users from binding directly to information inside the item object
 
+        //All of the info below Name/Description/ID is all set continuously as changes happen while performing add or edit.
+        
         public string? Name //sets the name for the item through a public property
         {
             get
@@ -83,13 +86,90 @@ namespace WebStore.MAUI.ViewModels
         {
             get
             {
-                return Item?.Price ?? 0;
+                return Item?.Price ?? 0m;
             }
             set
             {
                 if (Item != null)
                 {
                     Item.Price = value;
+                }
+            }
+        }
+
+        public bool IsBOGO
+        {
+            get
+            {
+                return Item?.IsBOGO ?? false; //assume that IsBOGO is false
+            }
+            set
+            {
+                if( Item != null)
+                {
+                    Item.IsBOGO = value;
+                }
+            }
+        }
+
+        public decimal TotalForThisItem
+        {
+            get
+            {
+                return Item?.TotalForThisItem ?? 0m;
+            }
+            set
+            {
+                if (Item != null)
+                {
+                    Item.TotalForThisItem = value;
+                }
+            }
+        }
+
+        public double Markdown
+        {
+            get
+            {
+                return Item?.Markdown ?? 0;
+            }
+            set
+            {
+                if (Item != null)
+                {
+                    Item.Markdown = value;
+                }
+            }
+        }
+
+        //This is only used to display that an item is BOGO from the shop screen (displays "BOGO" if BOGO, and empty string if not BOGO)
+        public string IsBOGODisplay
+        {
+            get
+            {
+                if(IsBOGO == true)
+                {
+                    return "BOGO"; //display in the ui that this item is bogo
+                }
+                else
+                {
+                    return string.Empty; //not bogo
+                }
+            }
+        }
+
+        //This is used to display the markdown of the item (displays "% OFF" if there is a markdown on the item)
+        public string IsMarkedDownDisplay
+        {
+            get
+            {
+                if (Markdown != 0)
+                {
+                    return $"({Markdown}% OFF)";
+                }
+                else
+                {
+                    return string.Empty; //no markdown
                 }
             }
         }
@@ -122,7 +202,6 @@ namespace WebStore.MAUI.ViewModels
             }
             Shell.Current.GoToAsync($"//AddToCart?itemID={i.Item.ID}");
         }
-
         
         
         public void SetupCommands() //takes public products and binds them to a new instance of an object called command
@@ -140,7 +219,6 @@ namespace WebStore.MAUI.ViewModels
         {
             Item = new Item();
             
-
             SetupCommands(); //calls the function to set up the commands
         }
 
@@ -151,15 +229,9 @@ namespace WebStore.MAUI.ViewModels
                                                          //in the inventory and AddToCart() function will act dumb.
         {
             Item existingItem = ItemServiceProxy.Current?.Items?.FirstOrDefault(i => i.ID == id); //we look through all of the existing items in the items list
-            Item clonedItem = new Item
-            {
-                ID = existingItem.ID,
-                Name = existingItem?.Name,
-                Description = existingItem?.Description,
-                Price = existingItem.Price,
-                Quantity = 1
-            };
-            Item = clonedItem;
+            Item clonedItem = new Item(existingItem); //use the copy constructor in Item.cs to create a copy of the existing item
+            clonedItem.Quantity = 1; //set the cloned item quantity to 1, assuming that the user would just want to add one item to their shopping cart
+            Item = clonedItem; 
 
         }
 
@@ -170,7 +242,8 @@ namespace WebStore.MAUI.ViewModels
             if(Item == null)
             {
                 //Potential issue here where two users could edit / delete at the same time and this would give you a blank name, however,
-                //this sets the item
+                //this sets the item.
+                //This creates a new item with null values id the ID passed in isn't recognized
                 Item = new Item();
             }
         }
@@ -190,16 +263,18 @@ namespace WebStore.MAUI.ViewModels
             }
         }
 
-        public void Add() //executes add or update on "ok" clicked
+        public void Add() //Adds or update Item in inventory
         {
             ItemServiceProxy.Current.AddOrUpdate(Item);
         }
 
-        public void AddOrUpdateCart() //executes add to cart on "ok" clicked
+ 
+        public void AddItemToCart()  //Adds or updates Item in cart
         {
-            //Might need to do something here, I dont think the correct value is being passed in but idk
-
-            ShoppingCartService.Current.AddToCart(Item);
+            ShoppingCartServiceProxy.Current.AddToCart(Item);
         }
+
+
+
     }
 }
