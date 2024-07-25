@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using WebStore.Library.DTO;
 using WebStore.Library.Models;
 using WebStore.Library.Services;
 
@@ -13,7 +14,7 @@ namespace WebStore.MAUI.ViewModels
     public class CartViewModel
     {
 
-        public ShoppingCart? ShoppingCart;
+        public ShoppingCartDTO? ShoppingCart;
 
         public string ShoppingCartName
         {
@@ -72,10 +73,10 @@ namespace WebStore.MAUI.ViewModels
 
         public CartViewModel()
         {
-            ShoppingCart = new ShoppingCart();
+            ShoppingCart = new ShoppingCartDTO();
         }
 
-        public CartViewModel(ShoppingCart c)
+        public CartViewModel(ShoppingCartDTO c)
         {
             ShoppingCart = c;
         }
@@ -85,7 +86,7 @@ namespace WebStore.MAUI.ViewModels
             ShoppingCart = ShoppingCartServiceProxy.Current?.Carts?.FirstOrDefault(c => c.ShoppingCartID == ID);
             if(ShoppingCart == null)
             {
-                ShoppingCart = new ShoppingCart();
+                ShoppingCart = new ShoppingCartDTO();
             }
         }
 

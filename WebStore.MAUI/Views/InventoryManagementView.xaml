@@ -40,6 +40,10 @@
             Clicked="AddClicked"
             />
         <Button
+            Text="Mass Import Items"
+            Clicked="MassImportClicked"
+            />
+        <Button
             Text="Edit Selected Item"
             Clicked="EditClicked"
             />

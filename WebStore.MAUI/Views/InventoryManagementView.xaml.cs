@@ -44,4 +44,9 @@ public partial class InventoryManagementView : ContentPage
     {
         Shell.Current.GoToAsync("//TaxConfig");
     }
+
+    private void MassImportClicked(object sender, EventArgs e)
+    {
+        Shell.Current.GoToAsync("//MassImportView");
+    }
 }

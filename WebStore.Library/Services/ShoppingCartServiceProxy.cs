@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebStore.Library.DTO;
 using WebStore.Library.Models;
 
 namespace WebStore.Library.Services
@@ -19,16 +20,16 @@ namespace WebStore.Library.Services
         {
             SelectedShoppingCartID = 1;
             TaxForAllItems = 0;
-            carts = new List<ShoppingCart>(
-                new List<ShoppingCart> //create a new list of shopping carts
+            carts = new List<ShoppingCartDTO>(
+                new List<ShoppingCartDTO> //create a new list of shopping carts
                 {
-                    new ShoppingCart //initilize values for each shopping cart
+                    new ShoppingCartDTO //initilize values for each shopping cart
                     {
                         ShoppingCartID = 1, //id doesn't really matter right now, can add logic to change this later on
                         ShoppingCartName = "Default",
                         ShoppingCartTotal = 0m, //initial total is 0
                         ShoppingCartTotalAfterTax = 0m,
-                        Contents = new List<Item>() //create a new list of items, which is the contents of a single shopping cart
+                        Contents = new List<ItemDTO>() //create a new list of items, which is the contents of a single shopping cart
                     }
                 }
             );
@@ -53,10 +54,10 @@ namespace WebStore.Library.Services
             }
         }
 
-        private List<ShoppingCart> carts; //read only collection of shopping carts
+        private List<ShoppingCartDTO> carts; //read only collection of shopping carts
 
 
-        public ReadOnlyCollection<ShoppingCart> Carts
+        public ReadOnlyCollection<ShoppingCartDTO> Carts
         {
             get
             {
@@ -69,7 +70,7 @@ namespace WebStore.Library.Services
             TaxForAllItems = d;
         }
 
-        public ShoppingCart? AddOrUpdateCartDetails(ShoppingCart? c) //creating a cart in a list of carts
+        public ShoppingCartDTO? AddOrUpdateCartDetails(ShoppingCartDTO? c) //creating a cart in a list of carts
         {
             if(carts == null)
             {
@@ -114,9 +115,9 @@ namespace WebStore.Library.Services
         }
 
 
-        public void AddToCart(Item newItem) //adding a product in a cart, updates quantity automatically if the item is already in the cart
+        public void AddToCart(ItemDTO newItem) //adding a product in a cart, updates quantity automatically if the item is already in the cart
         {
-            ShoppingCart selectedCart = ShoppingCartServiceProxy.Current.Carts.FirstOrDefault(c => c.ShoppingCartID == SelectedShoppingCartID);
+            ShoppingCartDTO selectedCart = ShoppingCartServiceProxy.Current.Carts.FirstOrDefault(c => c.ShoppingCartID == SelectedShoppingCartID);
 
             if (selectedCart == null || selectedCart.Contents == null)
             {
@@ -127,13 +128,13 @@ namespace WebStore.Library.Services
             //looking for the first item that matches the id. If item cant be found return default (or null). "existingItems" is just a placeholder name
             //for Contents in shopping cart
             var existingItem = selectedCart?.Contents?.FirstOrDefault(existingItems => existingItems.ID == newItem.ID);
-
+                    
             //remove the quantity from the inventory
             var inventoryItem = ItemServiceProxy.Current.Items.FirstOrDefault(invItem => invItem.ID == newItem.ID);
 
-            if (inventoryItem == null) //if the inventory item doesnt exist (this shouldn't happen)
+            if (inventoryItem == null || existingItem?.Quantity > inventoryItem.Quantity || newItem?.Quantity > inventoryItem.Quantity)
             {
-                return;
+                return; //return nothing if the inventory item is null or if the requested quantity is greater than the inventory quantity
             }
             inventoryItem.Quantity -= newItem.Quantity; //reduce inventory quantity
 

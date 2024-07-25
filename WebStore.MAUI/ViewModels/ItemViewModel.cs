@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using WebStore.Library.DTO;
 using WebStore.Library.Models;
 using WebStore.Library.Services;
 using Windows.Devices.Bluetooth.Advertisement;
@@ -18,7 +19,7 @@ namespace WebStore.MAUI.ViewModels
         public ICommand? DeleteCommand { get; set; }
         public ICommand? AddToCartCommand { get; set; }
 
-        public Item? Item; //this (was) private to keep users from binding directly to information inside the item object
+        public ItemDTO? Item; //this (was) private to keep users from binding directly to information inside the item object
 
         //All of the info below Name/Description/ID is all set continuously as changes happen while performing add or edit.
         
@@ -217,7 +218,7 @@ namespace WebStore.MAUI.ViewModels
         
         public ItemViewModel() //default constructor for ItemViewModel
         {
-            Item = new Item();
+            Item = new ItemDTO();
             
             SetupCommands(); //calls the function to set up the commands
         }
@@ -228,8 +229,8 @@ namespace WebStore.MAUI.ViewModels
                                                          //if you dont the item you return will be linked to the item
                                                          //in the inventory and AddToCart() function will act dumb.
         {
-            Item existingItem = ItemServiceProxy.Current?.Items?.FirstOrDefault(i => i.ID == id); //we look through all of the existing items in the items list
-            Item clonedItem = new Item(existingItem); //use the copy constructor in Item.cs to create a copy of the existing item
+            ItemDTO existingItem = ItemServiceProxy.Current?.Items?.FirstOrDefault(i => i.ID == id); //we look through all of the existing items in the items list
+            ItemDTO clonedItem = new ItemDTO(existingItem); //use the copy constructor in Item.cs to create a copy of the existing item
             clonedItem.Quantity = 1; //set the cloned item quantity to 1, assuming that the user would just want to add one item to their shopping cart
             Item = clonedItem; 
 
@@ -244,12 +245,12 @@ namespace WebStore.MAUI.ViewModels
                 //Potential issue here where two users could edit / delete at the same time and this would give you a blank name, however,
                 //this sets the item.
                 //This creates a new item with null values id the ID passed in isn't recognized
-                Item = new Item();
+                Item = new ItemDTO();
             }
         }
 
         //This constructor takes in an item and sets the item inside this ViewModel to the item passed in
-        public ItemViewModel(Item i) //paramaterized constructor for ItemViewModel
+        public ItemViewModel(ItemDTO i) //paramaterized constructor for ItemViewModel
         {
             Item = i;
             SetupCommands(); //calls the function to set up the commands
@@ -263,9 +264,12 @@ namespace WebStore.MAUI.ViewModels
             }
         }
 
-        public void Add() //Adds or update Item in inventory
+        public async void Add() //Adds or update Item in inventory
         {
-            ItemServiceProxy.Current.AddOrUpdate(Item);
+            if (Item != null)
+            {
+                Item = await ItemServiceProxy.Current.AddOrUpdate(Item);
+            }
         }
 
  
