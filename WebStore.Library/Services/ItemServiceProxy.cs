@@ -17,7 +17,7 @@ namespace WebStore.Library.Services
 
         private ItemServiceProxy() //private constructor, only a function inside the class can create an instance of itself
         {
-            //make web call to get the items list from the server
+            //make web call to get the items list from the inventory server 
             var response = new WebRequestHandler().Get("/Inventory").Result;
             items = JsonConvert.DeserializeObject<List<ItemDTO>>(response);
 
