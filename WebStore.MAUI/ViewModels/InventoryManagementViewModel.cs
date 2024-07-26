@@ -33,7 +33,7 @@ namespace WebStore.MAUI.ViewModels
 
         }
 
-        public async void RefreshItems()
+        public async Task RefreshItems() 
         {
             await ItemServiceProxy.Current.Get(); //get the newest data from the database via controller and EC 
             NotifyPropertyChanged(nameof(Items)); //display the new items
