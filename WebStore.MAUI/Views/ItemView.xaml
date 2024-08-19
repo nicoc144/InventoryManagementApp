@@ -2,11 +2,15 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="WebStore.MAUI.Views.ItemView"
-             Title="ItemView"
+             Title="Item Configuration"
              NavigatedTo="ContentPage_NavigatedTo">
     <VerticalStackLayout>
         <Grid>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -25,6 +29,11 @@
             <Entry Grid.Column="5" Text="{Binding Price}"/>
             <Label Grid.Column="6" Text="Quantity"/>
             <Entry Grid.Column="7" Text="{Binding Quantity}"/>
+            <Label Grid.Column="8" Text="Markdown (Percentage)"/>
+            <Entry Grid.Column="9" Text="{Binding Markdown}"/>
+            <Label Grid.Column="10" Text="Is Bogo (True/False)"/>
+            <Entry Grid.Column="11" Text="{Binding IsBOGO}"/>
+
 
         </Grid>
 

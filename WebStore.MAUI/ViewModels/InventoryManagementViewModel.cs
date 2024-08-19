@@ -2,6 +2,8 @@
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Windows.Markup;
+using WebStore.Library.DTO;
 using WebStore.Library.Models;
 using WebStore.Library.Services;
 
@@ -25,18 +27,19 @@ namespace WebStore.MAUI.ViewModels
                 return ItemServiceProxy.Current?.Items?.Select(i => new ItemViewModel(i)).ToList() ?? new List<ItemViewModel>();
             }
         }
-        public ItemViewModel SelectedItem {  get; set; }
+        public ItemViewModel SelectedItem {  get; set; } 
         public InventoryManagementViewModel()
         {
 
         }
 
-        public void RefreshItems()
+        public async Task RefreshItems() 
         {
-            NotifyPropertyChanged(nameof(Items));
+            await ItemServiceProxy.Current.Get(); //get the newest data from the database via controller and EC 
+            NotifyPropertyChanged(nameof(Items)); //display the new items
         }
 
-        public void UpdateItem()
+        public async void UpdateItem()
         {
             if(SelectedItem?.Item == null)
             {
@@ -45,17 +48,53 @@ namespace WebStore.MAUI.ViewModels
             Shell.Current.GoToAsync($"//Item?itemID={SelectedItem.Item.ID}"); //asynchronously go to the //Item view and
                                                                               //set itemID to ID at SelectedItem.Item.ID
                                                                               //(Sends the item ID to QueryProperty)
-            ItemServiceProxy.Current.AddOrUpdate(SelectedItem.Item); //does add or update passing in the item
+            await ItemServiceProxy.Current.AddOrUpdate(SelectedItem.Item); //does add or update passing in the item
         }
 
-        public void DeleteItem()
+        public async void DeleteItem()
         {
             if(SelectedItem?.Item == null)
             {
                 return;
             }
-            ItemServiceProxy.Current.Delete(SelectedItem.ID); //deletes passing in the id of the item
+            await ItemServiceProxy.Current.Delete(SelectedItem.Item.ID); //deletes passing in the id of the item
             RefreshItems(); //need to add refresh here or page doesnt update
+        }
+
+        public async void AddCSV(string CSVFile)
+        {
+            if (CSVFile == null)
+            {
+                return;
+            }
+            using (var reader =  new StreamReader(CSVFile)) //create new StreamReader which reads from the file specified by CSVFile
+            {
+                while (!reader.EndOfStream) //while the StreamReader hasn't reached the end
+                {
+                    var line = reader.ReadLine(); //read each line and store it here
+                    var values = line.Split(','); //splits the line string into an array of values
+
+                    //
+                    //In the .CSV file it's important to follow this format:
+                    //
+
+                    // [0] = String Name 
+                    // [1] = String Description
+                    // [2] = Decimal Price
+                    // [3] = Int Quantity
+
+                    ItemDTO ItemFromCSV = new ItemDTO(); //create a new item item dto
+
+                    ItemFromCSV.Name = values[0].Trim('\"');
+                    ItemFromCSV.Description = values[1].Trim('\"');
+                    String PriceTrimmed = (values[2]).Trim('\"'); //couldnt trim and parse on the same line
+                    ItemFromCSV.Price = Decimal.Parse(PriceTrimmed);
+                    String QuantityTrimmed = (values[3]).Trim('\"'); //couldnt trim and parse on the same line
+                    ItemFromCSV.Quantity = int.Parse(QuantityTrimmed);
+
+                    await ItemServiceProxy.Current.AddOrUpdate(ItemFromCSV);
+                }
+            }
         }
     }
 }

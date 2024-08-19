@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="WebStore.MAUI.Views.TaxConfigView"
+             Title="Tax Configuration"
+             NavigatedTo="ContentPage_NavigatedTo">
+    <VerticalStackLayout>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Column="0" Text="Enter Tax Rate:"/>
+            <Entry Grid.Column="1" Text="{Binding Tax}"/>
+
+        </Grid>
+        
+        <Button Text="Ok" Clicked="OkClicked"/>
+
+    </VerticalStackLayout>
+</ContentPage>

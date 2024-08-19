@@ -15,6 +15,11 @@ public partial class InventoryManagementView : ContentPage
         Shell.Current.GoToAsync("//MainPage");
     }
 
+    private void ContentPage_NavigatedTo(object sender, NavigatedToEventArgs e)
+    {
+        (BindingContext as InventoryManagementViewModel).RefreshItems();
+    }
+
     private void EditClicked(object sender, EventArgs e)
     {
         //calling the UpdateItem function from the InventoryManagementViewModel, you basically
@@ -30,18 +35,18 @@ public partial class InventoryManagementView : ContentPage
         Shell.Current.GoToAsync("//Item");
     }
 
-    private void ContentPage_NavigatedTo(object sender, NavigatedToEventArgs e)
-    {
-        (BindingContext as InventoryManagementViewModel).RefreshItems();
-    }
-
-    private void ContentPage_NavigatedFrom(object sender, NavigatedFromEventArgs e)
-    {
-        
-    }
-
     private void DeleteClicked(object sender, EventArgs e)
     {
         (BindingContext as InventoryManagementViewModel).DeleteItem();
+    }
+
+    private void ConfigTaxClicked(object sender, EventArgs e)
+    {
+        Shell.Current.GoToAsync("//TaxConfig");
+    }
+
+    private void MassImportClicked(object sender, EventArgs e)
+    {
+        Shell.Current.GoToAsync("//MassImportView");
     }
 }

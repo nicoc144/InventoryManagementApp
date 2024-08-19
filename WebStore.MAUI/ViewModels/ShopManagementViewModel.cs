@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.UI.Xaml.Controls.Primitives;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
@@ -16,8 +18,8 @@ namespace WebStore.MAUI.ViewModels
         public ShopManagementViewModel()
         {
             ItemToBuy = new ItemViewModel();
-
-
+            SelectedCart = new CartViewModel();
+            SetCartByID();
         }
 
         //This is the inventory, singleton list for shop view DO NOT MODIFY!!!
@@ -38,38 +40,48 @@ namespace WebStore.MAUI.ViewModels
             }
         }
 
-        //DO NOT MODIFY
-        public ShoppingCart Cart
+        public List<CartViewModel> Carts //list of carts
         {
             get
             {
-                return ShoppingCartService.Current?.Cart ?? new ShoppingCart();
+                return ShoppingCartServiceProxy.Current?.Carts.Select(c => new CartViewModel(c)).ToList() ?? new List<CartViewModel>();
             }
         }
 
-        public List<ItemViewModel> Contents
+        public CartViewModel CurrentCart { get; set; } //this is the current cart being added to in the shop view
+
+        public void SetCartByID()
         {
-            get
+            if (Carts.Count <= 1) //if only the default cart is in the Carts list
             {
-                return Cart.Contents.Select(i => new ItemViewModel(i)).ToList() ?? new List<ItemViewModel>();
+                CurrentCart = Carts.FirstOrDefault(c => c.ShoppingCartID == 1); //set the current cart to the first shopping cart in the list
+            }
+            else
+            {
+                CurrentCart = Carts.FirstOrDefault(c => c.ShoppingCartID == ShoppingCartServiceProxy.SelectedShoppingCartID);
             }
         }
 
-        public decimal Total
-        {
+        public double Tax
+        { 
             get
             {
-                return Cart.ShoppingCartTotal;
+                return ShoppingCartServiceProxy.TaxForAllItems;
+            }
+            set
+            {
+                ShoppingCartServiceProxy.SetTaxForAllItems(value);
             }
         }
 
         //private Item itemToBuy; //set this to private to ensure that we are not hitting the setter execpt for the first time
-        public ItemViewModel ItemToBuy { get; set; }
+        public ItemViewModel ItemToBuy { get; set; } //"ItemVeiwModel" being set to "Item" was causing problems in the professor's example
 
+        public CartViewModel SelectedCart { get; set; }
 
         //public Item ItemToBuy { get; set; } //similar to selectedItem in inventorymanagementview code behind
 
-        
+
         public event PropertyChangedEventHandler? PropertyChanged;
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
         {
@@ -80,8 +92,9 @@ namespace WebStore.MAUI.ViewModels
         public void RefreshItems()
         {
             NotifyPropertyChanged(nameof(Items));
-            NotifyPropertyChanged(nameof(Contents));
-            NotifyPropertyChanged(nameof(Total));
+            NotifyPropertyChanged(nameof(Carts));
+            NotifyPropertyChanged(nameof(CurrentCart));
+            NotifyPropertyChanged(nameof(Tax));
         }
 
         public void UpdateItemView() //needed in order to set the values for the add to cart screen
@@ -92,8 +105,9 @@ namespace WebStore.MAUI.ViewModels
             }
 
             Shell.Current.GoToAsync($"//AddToCart?cartItemID={ItemToBuy.Item.ID}"); //asynchronously go to the //Item view and
-                                                                              //set cartItemID to ID at SelectedItem.Item.ID
-                                                                              //(Sends the item ID to QueryProperty)
+                                                                                    //set cartItemID to ID at SelectedItem.Item.ID
+                                                                                    //(Sends the item ID to QueryProperty)
         }
+
     }
 }

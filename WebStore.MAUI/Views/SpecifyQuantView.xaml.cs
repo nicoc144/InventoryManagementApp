@@ -12,18 +12,19 @@ public partial class SpecifyQuantView : ContentPage
 		InitializeComponent();
 	}
 
-    private void ContentPage_NavigatedTo(object sender, NavigatedToEventArgs e)
-    {
-        BindingContext = new ItemViewModel(CartItemID, "cloneThisID");
-    }
     private void OkClicked(object sender, EventArgs e)
     {
-        (BindingContext as ItemViewModel).AddOrUpdateCart();
+        (BindingContext as ItemViewModel).AddItemToCart();
         Shell.Current.GoToAsync("//Shop");
     }
 
     private void CancelClicked(object sender, EventArgs e)
     {
         Shell.Current.GoToAsync("//Shop");
+    }
+
+    private void ContentPage_NavigatedTo(object sender, NavigatedToEventArgs e)
+    {
+        BindingContext = new ItemViewModel(CartItemID, "cloneThisID");
     }
 }
