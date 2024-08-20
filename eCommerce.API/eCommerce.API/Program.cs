@@ -3,7 +3,7 @@ namespace eCommerce.API
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static void Main(string[] args) //code that's called when the API starts up, this is all just the default stuff from the swagger API template
         {
             var builder = WebApplication.CreateBuilder(args);
 
