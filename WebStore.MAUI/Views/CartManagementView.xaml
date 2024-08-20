@@ -15,10 +15,12 @@
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="7*"/>
                             </Grid.ColumnDefinitions>
                             <Label Grid.Column="0" Text="{Binding ShoppingCartID, StringFormat='[{0}]'}"/>
-                            <Label Grid.Column="1" Text="{Binding ShoppingCartName}"/>
+                            <Label Grid.Column="1" Text="{Binding IsActive}"/>
+                            <Label Grid.Column="2" Text="{Binding ShoppingCartName}"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>

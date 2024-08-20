@@ -22,7 +22,6 @@ namespace WebStore.MAUI.ViewModels
         public void RefreshItems()
         {
             NotifyPropertyChanged(nameof(Carts));
-            
         }
 
         public List<CartViewModel> Carts //list of carts
@@ -41,8 +40,8 @@ namespace WebStore.MAUI.ViewModels
             {
                 return;
             }
-
             ShoppingCartServiceProxy.SetCurrentShoppingCart(SelectedActiveCart.ShoppingCartID);
+            RefreshItems();
         }
 
         public void UpdateCart()

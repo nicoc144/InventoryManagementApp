@@ -63,6 +63,18 @@ namespace WebStore.MAUI.ViewModels
             }
         }
 
+        public String IsActive
+        {
+            get
+            {
+                if (ShoppingCartServiceProxy.SelectedShoppingCartID == ShoppingCart.ShoppingCartID)
+                {
+                    return "*ACTIVE*";
+                }
+                return string.Empty;
+            }
+        }
+
         public List<ItemViewModel> Contents
         { 
             get
