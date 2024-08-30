@@ -31,7 +31,8 @@ CREATE TABLE ITEM(
 	AllergyWarning nvarchar(255) NULL,
 )
 
-DROP TABLE ITEM /*Deletes table (Commented out to prevent accidental execution) */
+begin tran /*Begin transaction, if something bad happens simply run the command "rollback." Call this before doing update or delete. If its all good, run "commit."*/
+DROP TABLE ITEM /*Deletes table*/
 
 select * from ITEM ORDER BY ID asc
 
@@ -43,7 +44,7 @@ INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('I Pod Tou
 INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('I Pod Nano', 'I Pod Nano 16GB', 90, 75.55)
 INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('I Pad Mini', 'I Pad Mini 64GB', 90, 335.55)
 
-begin tran /*Begin transaction, if something bad happens simply run the command "rollback." Call this before doing update or delete. If its all good, run "commit."*/
+begin tran 
 
 DELETE ITEM 
 WHERE ID = 2 /*Deletes the item at the specified id*/
@@ -54,7 +55,7 @@ set Name = 'I Pod Shuffle',
 Description = 'I Pod Shuffle 8GB',
 Price = 55.55
 Where ID = 2
-commit
+commit /*Commit if the transaction goes the way you want it to */
 
 CREATE SCHEMA Item /*Put CRUD inside of this schema*/
 
