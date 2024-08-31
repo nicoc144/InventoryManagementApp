@@ -13,7 +13,7 @@ namespace WebStore.Library.Utilities
     public class WebRequestHandler
     {
         private string host = "localhost";
-        private string port = "7206";
+        private string port = "7206"; //Change this
         private HttpClient Client { get; }
         public WebRequestHandler()
         {
