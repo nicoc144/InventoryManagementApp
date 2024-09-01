@@ -11,8 +11,8 @@ namespace eCommerce.API.EC
 
         public async Task<IEnumerable<ItemDTO>> Get()
         {
-            //return new MSSQLContext().GetItems().Select(i => new ItemDTO(i));
-            return Filebase.Current.Items.Select(i => new ItemDTO(i));
+            return new MSSQLContext().GetItems().Select(i => new ItemDTO(i));
+            //return Filebase.Current.Items.Select(i => new ItemDTO(i));
         }
 
         public async Task<ItemDTO> AddOrUpdate(ItemDTO i)

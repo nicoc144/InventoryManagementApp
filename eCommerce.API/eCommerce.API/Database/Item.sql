@@ -1,19 +1,9 @@
+--Please execute every step below to create the Database, Tables, and Procedures
+
+--[STEP 1] CREATE DATABASE
 CREATE DATABASE eCommerce
 
-/* 
-public string? Name { get; set; }
-public string? Description { get; set; }
-public decimal Price { get; set; }
-public int ID { get; set; }
-public int Quantity { get; set; }
-public bool IsBOGO { get; set; }
-public double Markdown {  get; set; }
-public decimal TotalForThisItem { get; set; }
-public string? ExpirationDate { get; set; }
-public string? SellByDate { get; set; }
-public string? AllergyWarning { get; set; }
-*/
-
+--[STEP 2] CREATE THE TABLE FOR ITEM
 CREATE TABLE ITEM(
 	ID int IDENTITY(1,1) NOT NULL, /*"IDENTITY(1,1) means ID will start at 1 and increase in an increment of 1 */
 	[Name] nvarchar(255) NULL, /*"Name" is a reserved word, that's why it's in square brackets
@@ -31,34 +21,15 @@ CREATE TABLE ITEM(
 	AllergyWarning nvarchar(255) NULL,
 )
 
-begin tran /*Begin transaction, if something bad happens simply run the command "rollback." Call this before doing update or delete. If its all good, run "commit."*/
-DROP TABLE ITEM /*Deletes table*/
+--[OPTIONAL STEP] CREATE SOME VALUES FOR THE ITEM TABLE
+INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('[InsertBrandName] Phone', 'Phone manufactured by [InsertBrandName] in [InsertManufactureLocation]', 90, 889.99)
+INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('[InsertBrandName] Headphones', 'Headphones manufactured by [InsertBrandName] in [InsertManufactureLocation]', 100, 155.88)
+INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('[InsertBrandName] Tablet', 'Tablet manufactured by [InsertBrandName] in [InsertManufactureLocation]', 22, 335.55)
 
-select * from ITEM ORDER BY ID asc
-
-select ID, Name, Description, Price from ITEM ORDER BY ID asc
-
-sp_help ITEM
-
-INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('I Pod Touch', 'I Pod Touch 16GB', 90, 125.55)
-INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('I Pod Nano', 'I Pod Nano 16GB', 90, 75.55)
-INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('I Pad Mini', 'I Pad Mini 64GB', 90, 335.55)
-
-begin tran 
-
-DELETE ITEM 
-WHERE ID = 2 /*Deletes the item at the specified id*/
-
-begin tran
-update ITEM
-set Name = 'I Pod Shuffle',
-Description = 'I Pod Shuffle 8GB',
-Price = 55.55
-Where ID = 2
-commit /*Commit if the transaction goes the way you want it to */
-
+--[STEP 3] CREATE A SCHEMA FOR ITEM
 CREATE SCHEMA Item /*Put CRUD inside of this schema*/
 
+--[STEP 4] CREATE A PROCEDURE TO INSERT AN ITEM
 CREATE PROCEDURE Item.InsertItem /*Create a procedure with (name of schema).(name of stored procedure) format */
 @Name nvarchar(255)
 , @Description nvarchar(MAX)
@@ -74,14 +45,7 @@ BEGIN
 	SET @ID = SCOPE_IDENTITY()
 END
 
-declare @newID int
-exec Item.InsertItem @Name = 'ExampleProduct'
-, @Description = 'ExampleProduct Desc'
-, @Quantity = 10
-, @Price = 1.23
-, @ID = @newID out
-select @newID
-
+--[STEP 5] CREATE A PROCEDURE TO UPDATE AN ITEM
 CREATE PROCEDURE Item.UpdateItem
 @Name nvarchar(255)
 , @Description nvarchar(MAX)
@@ -99,3 +63,42 @@ BEGIN
 	WHERE
 		ID = @ID
 END
+
+----------------------------
+--ADDITIONAL FUNCTIONALITY--
+----------------------------
+
+--LOOK AT THE ITEMS IN THE TABLE ORDERED BY ID
+select * from ITEM ORDER BY ID asc
+
+--LOOK AT THE MOST IMPORTANT VALUES IN THE ITEM TABLE
+select ID, Name, Description, Price from ITEM ORDER BY ID asc
+
+--INSERT ITEM USING THE INSERTITEM PROCEDURE
+declare @newID int
+exec Item.InsertItem @Name = 'ExampleProduct'
+, @Description = 'ExampleProduct Desc'
+, @Quantity = 10
+, @Price = 1.23
+, @ID = @newID out
+select @newID
+
+--UPDATE ITEM AT A SPECIFIED ID
+begin tran
+update ITEM
+set Name = '[InsertBrandName] UpdatedIten',
+Description = 'This item was updated',
+Price = 55.55
+Where ID = 2
+commit /*Commit if the transaction goes the way you want it to */
+
+--DELETE AN INDIVIDUAL ITEM
+begin tran 
+DELETE ITEM 
+WHERE ID = 2 /*Deletes the item at the specified id*/
+
+--DROP THE WHOLE TABLE
+begin tran /*Begin transaction, if something bad happens simply run the command "rollback." Call this before doing update or delete. If its all good, run "commit."*/
+DROP TABLE ITEM /*Deletes table*/
+
+sp_help ITEM

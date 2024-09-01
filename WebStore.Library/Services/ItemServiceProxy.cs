@@ -20,7 +20,6 @@ namespace WebStore.Library.Services
             //make web call to get the items list from the inventory server 
             var response = new WebRequestHandler().Get("/Inventory").Result;
             items = JsonConvert.DeserializeObject<List<ItemDTO>>(response);
-
         }
 
         private static ItemServiceProxy? instance; //backing field, question mark makes this statement nullable, which ensures that
