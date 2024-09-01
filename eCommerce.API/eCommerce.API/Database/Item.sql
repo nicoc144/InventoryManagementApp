@@ -1,3 +1,4 @@
+--This is the query for creating items for the inventory 
 --Please execute every step below to create the Database, Tables, and Procedures
 
 --[STEP 1] CREATE DATABASE
@@ -64,6 +65,14 @@ BEGIN
 		ID = @ID
 END
 
+--[STEP 6] CREATE A PROCEDURE TO DELETE AN ITEM
+CREATE PROCEDURE Item.DeleteItem
+@itemID int
+AS
+BEGIN
+	DELETE ITEM where ID = @itemID
+END
+
 ----------------------------
 --ADDITIONAL FUNCTIONALITY--
 ----------------------------
@@ -91,6 +100,9 @@ Description = 'This item was updated',
 Price = 55.55
 Where ID = 2
 commit /*Commit if the transaction goes the way you want it to */
+
+--DELETE AN INDIVIDUAL ITEM USING PROCEDURE
+exec Item.DeleteItem @itemID=2
 
 --DELETE AN INDIVIDUAL ITEM
 begin tran 
