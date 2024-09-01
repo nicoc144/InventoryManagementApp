@@ -10,7 +10,7 @@ namespace eCommerce.API.Database
     {
         public Item AddItem(Item i)
         {
-            using (SqlConnection SqlClient = new SqlConnection(@"Server=.\localdb;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
+            using (SqlConnection SqlClient = new SqlConnection(@"Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
             {
                 using (SqlCommand Command = SqlClient.CreateCommand())
                 {
@@ -47,7 +47,7 @@ namespace eCommerce.API.Database
         public List<Item> GetItems()
         {
             var items = new List<Item>();
-            using (SqlConnection SqlClient = new SqlConnection("Server=(localdb)\\localdb;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
+            using (SqlConnection SqlClient = new SqlConnection("Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
             {
                 using (SqlCommand Command = SqlClient.CreateCommand())
                 {

@@ -30,6 +30,7 @@ namespace eCommerce.API.Database
         private Filebase() //on server
         {
             _root = @"C:\temp\Items"; //@ symbol means you can't modity anything inside quotation marks
+                                      //This is where the files are stored
         }
 
         public int NextID //get the next id of the item
