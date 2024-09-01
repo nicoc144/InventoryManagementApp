@@ -54,6 +54,6 @@ In MSSQL Server Manager, click on "File," "Open," and then "File."
 Copy the path from the API's Database folder. 
 Paste it into the open path for the MSSQL Server Manager
 Here, you can find the Querys for Item and Cart.
-Open them and follow the instructions (Make sure that youre adding the Tables, Schemas, and Procedures in the eCommerce Database and not master).
+Open them and follow the instructions from Item and Cart respectively (Make sure that youre adding the Tables, Schemas, and Procedures in the eCommerce Database and not master).
 
 
