@@ -55,15 +55,15 @@ DELETE CART where CartID = @cartID
 --ADDITIONAL FUNCTIONALITY--
 ----------------------------
 
---INSERT VALUE INTO CARTITEMS GIVING THE CART ID, ITEM ID, ETC
-INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(1, 20, 2.21, 1)
-INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(2, 330, 22.51, 1)
-
 --LOOK AT THE CARTS, CART ITEMS, AND USERS
 select * from CART c
 inner join CARTITEMS ci on c.CartID = ci.CartId
 left join ITEM i on ci.ItemID = i.ID
 where c.UserID = 1
+
+--INSERT VALUE INTO CARTITEMS GIVING THE CART ID, ITEM ID, ETC
+INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(1, 20, 2.21, 1)
+INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(2, 330, 22.51, 1)
 
 --CREATE A VIEW FOR THE CART VIEW
 create view CartView

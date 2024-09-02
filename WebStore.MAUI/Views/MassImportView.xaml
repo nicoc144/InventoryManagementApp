@@ -8,12 +8,24 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Text="Enter The File Location (EX: C:\Users\MyUsername\Documents\InventoryFile.csv):"/>
+            <Label Grid.Row="0" Grid.Column="0" Text="Enter The File Path:"/>
+            <Label Grid.Row="1" Grid.Column="0" Text="Help:"/>
+            <Label Grid.Row="2" Grid.Column="0" Text="Go into file exploper, find your .csv file and copy the path."/>
+            <Label Grid.Row="3" Grid.Column="0" Text="The path should look something like this: C:\Users\MyUsername\OneDrive\Documents\importFile.csv"/>
+            <Label Grid.Row="4" Grid.Column="0" Text=" "/>
+            <Label Grid.Row="5" Grid.Column="0" Text="Format for the .csv file:"/>
+            <Label Grid.Row="6" Grid.Column="0" Text="Name - Description - Price - Quantity"/>
             <Entry Grid.Row="0" Grid.Column="1" x:Name="PassedInFile"/>
 
         </Grid>

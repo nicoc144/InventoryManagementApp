@@ -57,13 +57,15 @@ AS
 BEGIN
 	UPDATE ITEM
 	SET 
-		Name = @Name
-		, Description = @Description
+		[Name] = @Name
+		, [Description] = @Description
 		, Quantity = @Quantity
 		, Price = @Price
 	WHERE
 		ID = @ID
 END
+
+DROP PROCEDURE Item.UpdateItem
 
 --[STEP 6] CREATE A PROCEDURE TO DELETE AN ITEM
 CREATE PROCEDURE Item.DeleteItem
@@ -102,7 +104,7 @@ Where ID = 2
 commit /*Commit if the transaction goes the way you want it to */
 
 --DELETE AN INDIVIDUAL ITEM USING PROCEDURE
-exec Item.DeleteItem @itemID=2
+exec Item.DeleteItem @itemID=3
 
 --DELETE AN INDIVIDUAL ITEM
 begin tran 
