@@ -21,6 +21,13 @@ namespace eCommerce.API.EC
         public async Task<ItemDTO> AddOrUpdate(ItemDTO i)
         {
             //Database storage
+            if(i.ID != 0) //If this is an update
+            {
+                if(new MSSQLContext().GetItems().FirstOrDefault(item => item.ID == i.ID) == null)
+                {
+                    return null; //Return null if the item you're trying to delete doesn't exist in the list
+                }
+            }
             return new ItemDTO(new MSSQLContext().AddItem(new Item(i)));
 
             //File based storage
@@ -30,6 +37,10 @@ namespace eCommerce.API.EC
         public async Task<ItemDTO?> Delete(int id)
         {
             //Database storage
+            if (new MSSQLContext().GetItems().FirstOrDefault(item => item.ID == id) == null)
+            {
+                return null; //return null if the item you're trying to delete doesn't exist in the list
+            }
             return new ItemDTO(new MSSQLContext().DeleteItem(id));
 
             //File based storage

@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Logging.Abstractions;
+using System.ComponentModel;
 using System.Data;
 using WebStore.Library.DTO;
 using WebStore.Library.Models;
@@ -8,11 +10,11 @@ namespace eCommerce.API.Database
 {
     public class MSSQLContext
     {
-        public Item AddItem(Item i)
+        public Item AddItem(Item i) //ADD AND UPDATE
         {
             using (SqlConnection SqlClient = new SqlConnection(@"Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
             {
-                if (i.ID == 0)
+                if (i.ID == 0) //ADD
                 {
                     using (SqlCommand cmd = SqlClient.CreateCommand())
                     {
@@ -43,7 +45,7 @@ namespace eCommerce.API.Database
                         catch (Exception ex) { }
                     }
                 }
-                else
+                else //UPDATE
                 {
                     using (SqlCommand cmd = SqlClient.CreateCommand())
                     {
@@ -70,7 +72,7 @@ namespace eCommerce.API.Database
             return i;
         }
 
-        public List<Item> GetItems()
+        public List<Item> GetItems() //READ
         {
             var items = new List<Item>();
             using (SqlConnection SqlClient = new SqlConnection("Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
@@ -106,9 +108,10 @@ namespace eCommerce.API.Database
 
         }
 
-        public Item DeleteItem(int id)
+        public Item DeleteItem(int id) //DELETE
         {
-            Item returnItem = GetItems().FirstOrDefault(i => i.ID == id); //Find the deleted item in the items list
+            Item returnItem = GetItems().FirstOrDefault(i => i.ID == id); //Find the item in the list
+           
             using (SqlConnection SqlClient = new SqlConnection(@"Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
             {
                 using (SqlCommand cmd = SqlClient.CreateCommand())
