@@ -37,7 +37,8 @@ Select the dll file (if the file is empty make sure you have built WebStore.Libr
 ## How to set up the database: <br />
 Firstly, if you do not want to use a database there is an option to create and store files on your local machine.
 To use this you would need to create a file on your (C:) drive called "temp," and inside that file create a file called "Items."
-This is where the items will be stored. Now in the "InventoryEC.cs" file you will need to uncomment the code which calls Filebase and Comment out the code which calls MSSQLContext. <br />
+This is where the items will be stored.
+Now in the "InventoryEC.cs" file you will need to uncomment the code which calls Filebase and Comment out the code which calls MSSQLContext. <br />
 
 To set up the SQL database, download Microsoft SQL Server Management Studio.
 Then you want to create a new SQL server instance, I reccomend using SQL Server 2022 Developer Edition (because it's free).
@@ -50,9 +51,9 @@ Set the authentication to "Windows Authentication" and encryption to "Mandatory.
 Click "Connect".
 In "eCommerce.API," right click on the solution and select "Open Folder In File Explorer." 
 Click on the "eCommerce.API" folder, and then the "Database" folder.
-In MSSQL Server Manager, click on "File," "Open," and then "File." 
 Copy the path from the API's Database folder. 
-Paste it into the open path for the MSSQL Server Manager
+In MSSQL Server Manager, click on "File," "Open," and then "File." 
+Paste the copied path into the "open" path for the MSSQL Server Manager
 Here, you can find the Querys for Item and Cart.
 Open them and follow the instructions from Item and Cart respectively (Make sure that youre adding the Tables, Schemas, and Procedures in the eCommerce Database and not master).
 
