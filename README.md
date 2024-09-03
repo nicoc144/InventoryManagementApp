@@ -1,6 +1,7 @@
 # HOW TO BUILD:
 
-Visual Studio is the preferred IDE.
+Visual Studio is the preferred IDE. <br />
+Only x86_64 architecture is supported (This is the only architecture Microsoft SQL supports).
 
 Go to visual studio. In the get started tab click "Clone a repository". <br />
 Paste the Url of this repository into the "Repository Location" field and save it on your machine. <br />
