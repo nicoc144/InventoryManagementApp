@@ -17,6 +17,8 @@ namespace WebStore.Library.Models
 
         public string ShoppingCartName { get; set; } //name of shopping cart (for wishlists you might want to name your carts so you can keep track of them)
 
+        public int UserID { get; set; }
+
         public decimal ShoppingCartTotal {  get; set; } //this is the total price for the shopping cart
 
         public decimal ShoppingCartTotalAfterTax { get; set; }
@@ -37,6 +39,7 @@ namespace WebStore.Library.Models
         {
             ShoppingCartID = s.ShoppingCartID;
             ShoppingCartName = s.ShoppingCartName;
+            UserID = s.UserID;
             ShoppingCartTotal = s.ShoppingCartTotal;
             ShoppingCartTotalAfterTax = s.ShoppingCartTotalAfterTax;
             Contents = s.Contents;
@@ -44,7 +47,7 @@ namespace WebStore.Library.Models
 
         public override string ToString()
         {
-            return $"[{ShoppingCartID}] {ShoppingCartName} / ${ShoppingCartTotal} / ${ShoppingCartTotalAfterTax} / {Contents}";
+            return $"[{ShoppingCartID}] {ShoppingCartName} /USR[{UserID}] / ${ShoppingCartTotal} / ${ShoppingCartTotalAfterTax} / {Contents}";
         }
     }
 }

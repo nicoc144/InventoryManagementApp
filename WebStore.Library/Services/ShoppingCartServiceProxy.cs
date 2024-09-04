@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebStore.Library.DTO;
 using WebStore.Library.Models;
+using WebStore.Library.Utilities;
 
 namespace WebStore.Library.Services
 {
@@ -18,21 +20,8 @@ namespace WebStore.Library.Services
         //initilize a list of shopping carts
         private ShoppingCartServiceProxy()
         {
-            SelectedShoppingCartID = 1;
-            TaxForAllItems = 0;
-            carts = new List<ShoppingCartDTO>(
-                new List<ShoppingCartDTO> //create a new list of shopping carts
-                {
-                    new ShoppingCartDTO //initilize values for each shopping cart
-                    {
-                        ShoppingCartID = 1, //id doesn't really matter right now, can add logic to change this later on
-                        ShoppingCartName = "Default",
-                        ShoppingCartTotal = 0m, //initial total is 0
-                        ShoppingCartTotalAfterTax = 0m,
-                        Contents = new List<ItemDTO>() //create a new list of items, which is the contents of a single shopping cart
-                    }
-                }
-            );
+            var response = new WebRequestHandler().Get("/Shop").Result;
+            carts = JsonConvert.DeserializeObject<List<ShoppingCartDTO>>(response);
         }
 
         private static ShoppingCartServiceProxy? instance;
@@ -63,6 +52,22 @@ namespace WebStore.Library.Services
             {
                 return carts?.AsReadOnly();
             }
+        }
+
+        public async Task<IEnumerable<ShoppingCartDTO>> Get() //async is a keyword that says this method is asyncronous
+        {
+            var result = await new WebRequestHandler().Get("/Shop"); //Make web call to get the items list from the server
+                                                                          //The "await" keyword specifies to not move on until the webrequesthandler successfully retrieves the full inventory list (ie this line of code is done executing)
+            var deserializedResult = JsonConvert.DeserializeObject<List<ShoppingCartDTO>>(result); //convert json blob into list of ItemDTO
+            carts = deserializedResult?.ToList() ?? new List<ShoppingCartDTO>(); //return empty if connection to data center is lost
+            return carts;
+        }
+
+        public async Task<ShoppingCartDTO> AddOrUpdate(ShoppingCartDTO? cart)
+        {
+            var result = await new WebRequestHandler().Post("/Shop", cart);
+            var cartToAddOrUpdate = JsonConvert.DeserializeObject<ShoppingCartDTO>(result);
+            return cartToAddOrUpdate;
         }
 
         public static void SetTaxForAllItems(double d)

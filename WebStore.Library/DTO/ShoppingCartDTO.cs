@@ -14,6 +14,7 @@ namespace WebStore.Library.DTO
         public int ShoppingCartID { get; set; } //keeps track of whos shopping cart this is
 
         public string ShoppingCartName { get; set; } //name of shopping cart (for wishlists you might want to name your carts so you can keep track of them)
+        public int UserID { get; set; }
 
         public decimal ShoppingCartTotal { get; set; } //this is the total price for the shopping cart
 
@@ -30,6 +31,7 @@ namespace WebStore.Library.DTO
         {
             ShoppingCartID = s.ShoppingCartID;
             ShoppingCartName = s.ShoppingCartName;
+            UserID = s.UserID;
             ShoppingCartTotal = s.ShoppingCartTotal;
             ShoppingCartTotalAfterTax = s.ShoppingCartTotalAfterTax;
             Contents = s.Contents;

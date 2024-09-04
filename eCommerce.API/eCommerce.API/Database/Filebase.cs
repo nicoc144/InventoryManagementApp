@@ -8,7 +8,7 @@ using WebStore.Library.Models;
 
 namespace eCommerce.API.Database
 {
-    public class Filebase
+    public class Filebase //Uses files on local computer instead of database, however only works for Inventory view and not Shop view
     {
         private string _root;
         private static Filebase _instance;

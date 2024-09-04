@@ -19,8 +19,9 @@ namespace WebStore.MAUI.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void RefreshItems()
+        public async void RefreshItems()
         {
+            await ShoppingCartServiceProxy.Current.Get();
             NotifyPropertyChanged(nameof(Carts));
         }
 

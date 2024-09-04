@@ -46,14 +46,49 @@ INSERT INTO CART(CartName, UserID) VALUES('Wishlist2', 1)
 --[OPTIONAL STEP] CREATE AN ITEM INSIDE THE DEFAULT CART (MAKE SURE YOU AT LEAST HAVE ONE ITEM IN THE INVENTORY ITEMS LIST)
 INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(1, 20, 125.55, 1) /*Adds Item ID 1 into the cart*/
 
---[STEP 7] CREATE PROCEDURE FOR DELETING CART
+--[STEP 7] CREATE SCHEMA FOR SHOPPING CART (SO YOU CAN ADD A NEW SHOPPING CART / WISHLIST IN THE SHOP VIEW)
+CREATE SCHEMA Cart /*Put CREATE UPDATE DELETE in this schema for Cart */
+
+--[STEP 8] CREATE PROCEDURE ADD CART (THIS ALLOWS YOU TO MAKE MULTIPLE CARTS / WISHLISTS IN THE SHOP VIEW)
+CREATE PROCEDURE Cart.AddCart
+@CartName nvarchar(255)
+, @UserID int
+, @CartID int output
+AS
+BEGIN
+	INSERT INTO CART(CartName, UserID) /*Don't include ID because the database is going to give it to you */
+	VALUES(@CartName, @UserID)
+
+	SET @CartID = SCOPE_IDENTITY()
+END
+
+--[STEP 9] CREATE PROCEDURE UPDATE CART (ALLOWS YOU TO UPDATE CART / WISHLIST)
+CREATE PROCEDURE Cart.UpdateCart
+@CartName nvarchar(255)
+, @UserID int
+, @CartID int 
+AS
+BEGIN
+	UPDATE CART
+	SET 
+		CartName = @CartName
+		, UserID = @UserID
+	WHERE
+		CartID = @CartID
+END
+
+--[STEP 10] CREATE PROCEDURE DELETE CART (ALLOWS YOU TO DELETE A CART / WISHLIST)
 CREATE PROCEDURE Cart.DeleteCart @cartID int
 AS
 DELETE CART where CartID = @cartID
 
+
 ----------------------------
 --ADDITIONAL FUNCTIONALITY--
 ----------------------------
+
+--DISPLAY CARTS
+SELECT CartID, REPLACE(CartName, '''','') as CartName, UserID FROM CART ORDER BY CartID asc
 
 --LOOK AT THE CARTS, CART ITEMS, AND USERS
 select * from CART c
@@ -85,9 +120,6 @@ left join ITEM i on ci.ItemID = i.ID
 --USE THE CART VIEW YOU CREATED ABOVE
 select * from CartView
 
---EXECUTE PROCEDURE DELETE CART
-exec DeleteCart @cartID = 2
-
 --DROP PROCEDURE
 DROP PROCEDURE DeleteCart
 
@@ -101,6 +133,9 @@ select * from #tempTable
 ;with MyCart (CartId, CartName) AS /*Basically works the same as how a select statement works, executes once but you can set it to a name*/
 	select CartID, CartName from CART
 ) select * from MyCart
+
+--EXECUTE PROCEDURE DELETE CART
+exec DeleteCart @cartID = 2
 
 --VALUES FOR USERS
 Select * from Users u

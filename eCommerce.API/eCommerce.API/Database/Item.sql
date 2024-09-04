@@ -28,7 +28,7 @@ INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('[InsertBr
 INSERT INTO ITEM ([Name], [Description], [Quantity], [Price]) VALUES ('[InsertBrandName] Tablet', 'Tablet manufactured by [InsertBrandName] in [InsertManufactureLocation]', 22, 335.55)
 
 --[STEP 3] CREATE A SCHEMA FOR ITEM
-CREATE SCHEMA Item /*Put CRUD inside of this schema*/
+CREATE SCHEMA Item /*Put INSERT UPDATE DELETE inside of this schema*/
 
 --[STEP 4] CREATE A PROCEDURE TO INSERT AN ITEM
 CREATE PROCEDURE Item.InsertItem /*Create a procedure with (name of schema).(name of stored procedure) format */

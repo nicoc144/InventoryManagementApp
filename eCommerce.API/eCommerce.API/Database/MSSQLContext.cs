@@ -8,7 +8,7 @@ using WebStore.Library.Models;
 
 namespace eCommerce.API.Database
 {
-    public class MSSQLContext
+    public class MSSQLContext //Manages database connections for Inventory and Shop
     {
         public Item AddItem(Item i) //ADD AND UPDATE
         {
@@ -132,6 +132,124 @@ namespace eCommerce.API.Database
                 }
                 return returnItem;
             }
+        }
+
+        public List<ShoppingCart> GetCarts() //READ
+        {
+            var carts = new List<ShoppingCart>();
+            using (SqlConnection SqlClient = new SqlConnection("Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
+            {
+                using (SqlCommand cmd = SqlClient.CreateCommand())
+                {
+                    var sql = $"SELECT CartID, REPLACE(CartName, '''','') as CartName, UserID FROM CART ORDER BY CartID asc"; //The replace replaces the escaped single quote with nothing
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = sql;
+
+                    try
+                    {
+                        SqlClient.Open();
+                        var reader = cmd.ExecuteReader(); //gives back a sql reader
+
+                        while (reader.Read())
+                        {
+                            carts.Add(new ShoppingCart
+                            {
+                                ShoppingCartID = (int)reader["CartID"],
+                                ShoppingCartName = (string)reader["CartName"],
+                                UserID = (int)reader["UserID"]
+                            });
+                        }
+                        SqlClient.Close();
+                    }
+                    catch (Exception ex) { }
+
+                }
+            }
+            return carts;
+        }
+
+        public ShoppingCart AddCart(ShoppingCart c) //ADD AND UPDATE
+        {
+            using (SqlConnection SqlClient = new SqlConnection(@"Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
+            {
+                if (c.ShoppingCartID == 0) //ADD
+                {
+                    using (SqlCommand cmd = SqlClient.CreateCommand())
+                    {
+                        var sql = $"Cart.AddCart"; //This is the sql code for inserting item
+                        cmd.CommandText = sql; //Sets the text of the command to the InsertItem procedure sql code
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure; //This is a stored procedure
+                        cmd.Parameters.Add(new SqlParameter("CartName", c.ShoppingCartName));
+                        cmd.Parameters.Add(new SqlParameter("UserID", c.UserID));
+
+                        //All of the incrementing for the ID is handled by the 3 lines of code below
+                        //Command.Parameters.Add(new SqlParameter("ID", ParameterDirection.Output, i.ID)); //Doesn't work
+                        var id = new SqlParameter("CartID", c.ShoppingCartID); //Make the parameter into an L value
+                        id.Direction = ParameterDirection.Output; //Return the value to me (the database makes the value since its an id)
+                        cmd.Parameters.Add(id); //Add L value
+
+                        try
+                        {
+                            SqlClient.Open();
+                            cmd.ExecuteNonQuery(); //User doesn't have to seee the value, it's in the variable which will be passed to the view
+                                                   //This is useful for insert, update, or delete where the results don't need to be displayed
+                                                   //to the user via the dataset.
+                            SqlClient.Close();
+
+                            c.ShoppingCartID = (int)id.Value;
+                        }
+                        catch (Exception ex) { }
+                    }
+                }
+                else //UPDATE
+                {
+                    using (SqlCommand cmd = SqlClient.CreateCommand())
+                    {
+                        var sql = $"Cart.UpdateCart"; //This is the sql code for inserting item
+                        cmd.CommandText = sql; //Sets the text of the command to the InsertItem procedure sql code
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure; //This is a stored procedure
+
+                        cmd.Parameters.Add(new SqlParameter("CartName", c.ShoppingCartName));
+                        cmd.Parameters.Add(new SqlParameter("UserID", c.UserID));
+                        cmd.Parameters.Add(new SqlParameter("CartID", c.ShoppingCartID));
+                        try
+                        {
+                            SqlClient.Open();
+                            cmd.ExecuteNonQuery();
+                            SqlClient.Close();
+                        }
+                        catch (Exception ex) { }
+                    }
+
+                }
+            }
+            return c;
+
+        }
+        public ShoppingCart DeleteCart(int id) //DELETE
+        {
+            ShoppingCart returnCart = GetCarts().FirstOrDefault(i => i.ShoppingCartID == id); //Find the item in the list
+
+            using (SqlConnection SqlClient = new SqlConnection(@"Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
+            {
+                using (SqlCommand cmd = SqlClient.CreateCommand())
+                {
+                    var sql = $"Cart.DeleteCart";
+                    cmd.CommandText = sql;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("cartID", id)); //Set the id you passed in to be the @itemID on the database
+
+                    try
+                    {
+                        SqlClient.Open();
+                        cmd.ExecuteNonQuery();
+                        SqlClient.Close();
+
+                    }
+                    catch (Exception ex) { }
+                }
+            }
+            return returnCart;
         }
     }
 }
