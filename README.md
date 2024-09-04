@@ -40,7 +40,7 @@ Firstly, if you do not want to use a database there is an option to create and s
 To use this you would need to create a file on your (C:) drive called "temp," and inside that file create a file called "Items."
 This is where the items will be stored.
 Now in the "InventoryEC.cs" file you will need to uncomment the code which calls Filebase and Comment out the code which calls MSSQLContext.
-**This only works for inventory, not shop**<br />
+**This only works for inventory, not shop.**<br />
 
 To set up the SQL database, download Microsoft SQL Server Management Studio.
 Then you want to create a new SQL server instance, I reccomend using SQL Server 2022 Developer Edition (because it's free).
