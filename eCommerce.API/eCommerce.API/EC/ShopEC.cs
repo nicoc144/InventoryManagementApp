@@ -18,11 +18,19 @@ namespace eCommerce.API.EC
             {
                 if (new MSSQLContext().GetCarts().FirstOrDefault(cart => cart.ShoppingCartID == c.ShoppingCartID) == null)
                 {
-                    return null; //Return null if the item you're trying to delete doesn't exist in the list
+                    return null; //return null if the item you're trying to delete doesn't exist in the list
                 }
             }
             return new ShoppingCartDTO(new MSSQLContext().AddCart(new ShoppingCart(c)));
+        }
 
+        public async Task<ShoppingCartDTO?> Delete(int id)
+        {
+            if (new MSSQLContext().GetCarts().FirstOrDefault(cart => cart.ShoppingCartID == id) == null)
+            {
+                return null; //return null if the item you're trying to delete doesn't exist in the list
+            }
+            return new ShoppingCartDTO(new MSSQLContext().DeleteCart(id));
         }
     }
 }

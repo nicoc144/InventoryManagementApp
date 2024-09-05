@@ -18,7 +18,7 @@ public partial class CartManagementView : ContentPage
 
     private void ContentPage_NavigatedTo(object sender, NavigatedToEventArgs e)
     {
-        (BindingContext as CartManagementViewModel).RefreshItems();
+        (BindingContext as CartManagementViewModel).RefreshCarts();
     }
 
     private void SetAsActiveShoppingCartClicked(object sender, EventArgs e)
@@ -35,5 +35,10 @@ public partial class CartManagementView : ContentPage
     private void CreateNewCartClicked(object sender, EventArgs e)
     {
         Shell.Current.GoToAsync("//CartView");
+    }
+
+    private void DeleteShoppingCartClicked(object sender, EventArgs e)
+    {
+        (BindingContext as CartManagementViewModel).DeleteShoppingCart();
     }
 }

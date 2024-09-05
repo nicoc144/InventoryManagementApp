@@ -13,7 +13,8 @@ namespace WebStore.Library.Services
 {
     public class ShoppingCartServiceProxy //represents a list of shopping carts
     {
-        public static int SelectedShoppingCartID { get; private set; } //keeps track of the shopping cart being added to currently
+        public static int SelectedShoppingCartID { get; private set; } //Keeps track of the shopping cart being added to currently
+                                                                       //Keep this on the client side
 
         public static double TaxForAllItems { get; private set; }
 
@@ -22,6 +23,10 @@ namespace WebStore.Library.Services
         {
             var response = new WebRequestHandler().Get("/Shop").Result;
             carts = JsonConvert.DeserializeObject<List<ShoppingCartDTO>>(response);
+            if(carts.Count != 0)
+            {
+                SelectedShoppingCartID = 1;
+            }
         }
 
         private static ShoppingCartServiceProxy? instance;
@@ -63,11 +68,18 @@ namespace WebStore.Library.Services
             return carts;
         }
 
-        public async Task<ShoppingCartDTO> AddOrUpdate(ShoppingCartDTO? cart)
+        public async Task<ShoppingCartDTO> AddOrUpdateCartDetails(ShoppingCartDTO? cart)
         {
             var result = await new WebRequestHandler().Post("/Shop", cart);
             var cartToAddOrUpdate = JsonConvert.DeserializeObject<ShoppingCartDTO>(result);
             return cartToAddOrUpdate;
+        }
+
+        public async Task<ShoppingCartDTO> DeleteCart(int id) //deletes an item based on the id passed in
+        {
+            var result = await new WebRequestHandler().Delete($"/Shop/{id}");
+            var cartToDelete = JsonConvert.DeserializeObject<ShoppingCartDTO>(result);
+            return cartToDelete;
         }
 
         public static void SetTaxForAllItems(double d)
@@ -75,40 +87,40 @@ namespace WebStore.Library.Services
             TaxForAllItems = d;
         }
 
-        public ShoppingCartDTO? AddOrUpdateCartDetails(ShoppingCartDTO? c) //creating a cart in a list of carts
-        {
-            if(carts == null)
-            {
-                return null; //return null if carts is null
-            }
+        //public ShoppingCartDTO? AddOrUpdateCartDetails(ShoppingCartDTO? c) //creating a cart in a list of carts
+        //{
+        //    if(carts == null)
+        //    {
+        //        return null; //return null if carts is null
+        //    }
 
-            bool isAdd = false; //assume youre editing a cart
+        //    bool isAdd = false; //assume youre editing a cart
 
-            if(c.ShoppingCartID == 0) //check if the shopping cart id exists
-            {
-                c.ShoppingCartID = LastID + 1; //if id doesn't exist, assign a new id
-                isAdd = true; //this is an add
-            }
+        //    if(c.ShoppingCartID == 0) //check if the shopping cart id exists
+        //    {
+        //        c.ShoppingCartID = LastID + 1; //if id doesn't exist, assign a new id
+        //        isAdd = true; //this is an add
+        //    }
 
-            if(isAdd)
-            {
-                carts.Add(c); //had to change carts to List from ReadOnlyCollection for this to work, but this adds c to the carts list
-            }
+        //    if(isAdd)
+        //    {
+        //        carts.Add(c); //had to change carts to List from ReadOnlyCollection for this to work, but this adds c to the carts list
+        //    }
 
-            return c; //return the cart
-        }
+        //    return c; //return the cart
+        //}
 
-        public int LastID //find the last id of the shopping carts
-        {
-            get
-            {
-                if (carts?.Any() ?? false)
-                {
-                    return carts?.Select(c => c.ShoppingCartID)?.Max() ?? 0;
-                }
-                return 0;
-            }
-        }
+        //public int LastID //find the last id of the shopping carts
+        //{
+        //    get
+        //    {
+        //        if (carts?.Any() ?? false)
+        //        {
+        //            return carts?.Select(c => c.ShoppingCartID)?.Max() ?? 0;
+        //        }
+        //        return 0;
+        //    }
+        //}
 
         public static void SetCurrentShoppingCart(int id)
         {

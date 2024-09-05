@@ -8,7 +8,7 @@ using WebStore.Library.Models;
 
 namespace eCommerce.API.Database
 {
-    public class MSSQLContext //Manages database connections for Inventory and Shop
+    public class  MSSQLContext() //Manages database connections for Inventory and Shop
     {
         public Item AddItem(Item i) //ADD AND UPDATE
         {

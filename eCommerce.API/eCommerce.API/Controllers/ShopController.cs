@@ -26,10 +26,10 @@ namespace eCommerce.API.Controllers
             return await new ShopEC().AddOrUpdate(p);
         }
 
-        //[HttpDelete("/{id}")]
-        //public async Task<ShoppingCartDTO> Delete(int id)
-        //{
-        //    return await new ShopEC().Delete(id);
-        //}
+        [HttpDelete("/Shop/{id}")]
+        public async Task<ShoppingCartDTO> Delete(int id)
+        {
+            return await new ShopEC().Delete(id);
+        }
     }
 }
