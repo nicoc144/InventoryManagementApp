@@ -15,11 +15,7 @@ CREATE TABLE ITEM(
 	Quantity int NULL,
 	Price numeric(10,2) NULL, /*"numeric(10,2)" is like a double/float/decimal. Numeric(10,2) means the max number of digits is 10 (including after decimal) and the precision is 2 */
 	IsBOGO bit NULL, /*"bit" represents bool values */
-	Markdown numeric(5,2) NULL,
-	TotalForThisItem numeric(10,2) NULL,
-	ExpirationDate nvarchar(255) NULL,
-	SellByDate nvarchar(255) NULL,
-	AllergyWarning nvarchar(255) NULL,
+	Markdown numeric(5,2) NULL
 )
 
 --[OPTIONAL STEP] CREATE SOME VALUES FOR THE ITEM TABLE

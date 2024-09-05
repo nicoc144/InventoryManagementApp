@@ -18,25 +18,17 @@ CREATE TABLE CART(
 --[STEP 3] CREATE THE TABLE FOR CART ITEMS
 CREATE TABLE CARTITEMS(
 	CartItemsID INT IDENTITY(1,1) NOT NULL
-	, ItemID INT
-	/*, [Name] nvarchar(255) NULL*/
-	/*, [Description] nvarchar(MAX) NULL*/
-	, Quantity int NULL
-	, Price numeric(10,2) NULL
+	, ItemInCartID INT /*ID of the item in the cart*/
+	, Quantity int NULL /*Quantity of the item in the cart*/
+	, Price numeric(10,2) NULL /*Price of the item in the cart (Can be different from the price in the inventory if there's a markdown or BOGO)"*/
 	, CartID int NOT NULL
-)
-
---[STEP 4] CREATE CART ITEM LINKS
-CREATE TABLE CARTITEMLINKS(
-	ID INT IDENTITY(1,1) NOT NULL
-	, CartID int NOT NULL
-	, CartItemID int NOT NULL
+	, TotalForThisItem numeric(10,2) NULL
 )
 	
---[STEP 5] CREATE A DEFAULT USER
+--[STEP 4] CREATE A DEFAULT USER
 INSERT INTO USERS(Username, PasswordHash) VALUES ('default', ';1234567890')
 
---[STEP 6] CREATE THE DEFAULT CART
+--[STEP 5] CREATE THE DEFAULT CART
 INSERT INTO CART(CartName, UserID) VALUES('DefaultCart', 1)
 
 --[OPTIONAL STEP] CREATE MORE CARTS
@@ -46,10 +38,10 @@ INSERT INTO CART(CartName, UserID) VALUES('Wishlist2', 1)
 --[OPTIONAL STEP] CREATE AN ITEM INSIDE THE DEFAULT CART (MAKE SURE YOU AT LEAST HAVE ONE ITEM IN THE INVENTORY ITEMS LIST)
 INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(1, 20, 125.55, 1) /*Adds Item ID 1 into the cart*/
 
---[STEP 7] CREATE SCHEMA FOR SHOPPING CART (SO YOU CAN ADD A NEW SHOPPING CART / WISHLIST IN THE SHOP VIEW)
+--[STEP 6] CREATE SCHEMA FOR SHOPPING CART (SO YOU CAN HAVE MULTIPLE CARTS / WISHLISTS)
 CREATE SCHEMA Cart /*Put CREATE UPDATE DELETE in this schema for Cart */
 
---[STEP 8] CREATE PROCEDURE ADD CART (THIS ALLOWS YOU TO MAKE MULTIPLE CARTS / WISHLISTS IN THE SHOP VIEW)
+--[STEP 7] CREATE PROCEDURE ADD CART (THIS ALLOWS YOU TO MAKE MULTIPLE CARTS / WISHLISTS IN THE SHOP VIEW WITH DISTINCT NAME)
 CREATE PROCEDURE Cart.AddCart
 @CartName nvarchar(255)
 , @UserID int
@@ -62,7 +54,7 @@ BEGIN
 	SET @CartID = SCOPE_IDENTITY()
 END
 
---[STEP 9] CREATE PROCEDURE UPDATE CART (ALLOWS YOU TO UPDATE CART / WISHLIST)
+--[STEP 8] CREATE PROCEDURE UPDATE CART (ALLOWS YOU TO UPDATE CART / WISHLIST NAME)
 CREATE PROCEDURE Cart.UpdateCart
 @CartName nvarchar(255)
 , @UserID int
@@ -77,7 +69,7 @@ BEGIN
 		CartID = @CartID
 END
 
---[STEP 10] CREATE PROCEDURE DELETE CART (ALLOWS YOU TO DELETE A CART / WISHLIST)
+--[STEP 9] CREATE PROCEDURE DELETE CART (ALLOWS YOU TO DELETE A CART / WISHLIST)
 CREATE PROCEDURE Cart.DeleteCart @cartID int
 AS
 DELETE CART where CartID = @cartID
@@ -93,7 +85,7 @@ SELECT CartID, REPLACE(CartName, '''','') as CartName, UserID FROM CART ORDER BY
 --LOOK AT THE CARTS, CART ITEMS, AND USERS
 select * from CART c
 inner join CARTITEMS ci on c.CartID = ci.CartId
-left join ITEM i on ci.ItemID = i.ID
+left join ITEM i on ci.ItemInCartID = i.ID
 where c.UserID = 1
 
 declare @newID int
@@ -102,9 +94,16 @@ exec Cart.AddCart @CartName = 'NewCart1'
 , @CartID = @newID out
 select @newID
 
+--CREATE CART ITEM LINKS (FOR MULTI SELECT OR DRAG AND DROP)
+CREATE TABLE CARTITEMLINKS( /*In order to have a many to many relationship with cart items this is needed*/
+	ID INT IDENTITY(1,1) NOT NULL
+	, CartID int NOT NULL /*Cart you want to add to*/
+	, CartItemID int NOT NULL /*Product you want to add*/
+)
+
 --INSERT VALUE INTO CARTITEMS GIVING THE CART ID, ITEM ID, ETC
-INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(1, 20, 2.21, 1)
-INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(2, 330, 22.51, 1)
+INSERT INTO CARTITEMS(ItemInCartID, Quantity, Price, CartID) VALUES(1, 20, 2.21, 1)
+INSERT INTO CARTITEMS(ItemInCartID, Quantity, Price, CartID) VALUES(2, 330, 22.51, 1)
 
 --CREATE A VIEW FOR THE CART VIEW
 create view CartView
