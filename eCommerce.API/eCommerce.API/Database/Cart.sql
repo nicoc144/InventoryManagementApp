@@ -96,6 +96,12 @@ inner join CARTITEMS ci on c.CartID = ci.CartId
 left join ITEM i on ci.ItemID = i.ID
 where c.UserID = 1
 
+declare @newID int
+exec Cart.AddCart @CartName = 'NewCart1'
+, @UserID = 1
+, @CartID = @newID out
+select @newID
+
 --INSERT VALUE INTO CARTITEMS GIVING THE CART ID, ITEM ID, ETC
 INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(1, 20, 2.21, 1)
 INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(2, 330, 22.51, 1)
