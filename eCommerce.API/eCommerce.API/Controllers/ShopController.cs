@@ -31,5 +31,11 @@ namespace eCommerce.API.Controllers
         {
             return await new ShopEC().Delete(id);
         }
+
+        [HttpGet("/CartItems/{activeCartID}")]
+        public async Task<IEnumerable<ItemDTO>> GetCartItem(int activeCartID)
+        {
+            return await new ShopEC().GetCartItems(activeCartID);
+        }
     }
 }

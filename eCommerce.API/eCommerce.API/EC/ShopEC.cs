@@ -4,12 +4,17 @@ using WebStore.Library.Models;
 
 namespace eCommerce.API.EC
 {
-    public class ShopEC //The enterprise contoller does all of the "heavy lifting," gets specificly used by the controller
+    public class ShopEC 
     {
         public ShopEC() { }
         public async Task<IEnumerable<ShoppingCartDTO>> Get()
         {
             return new MSSQLContext().GetCarts().Select(i => new ShoppingCartDTO(i));
+        }
+
+        public async Task<IEnumerable<ItemDTO>> GetCartItems(int activeCartID)
+        {
+            return new MSSQLContext().GetItemsForCart(activeCartID).Select(i => new ItemDTO(i));
         }
 
         public async Task<ShoppingCartDTO> AddOrUpdate(ShoppingCartDTO c)
@@ -26,11 +31,16 @@ namespace eCommerce.API.EC
 
         public async Task<ShoppingCartDTO?> Delete(int id)
         {
-            if (new MSSQLContext().GetCarts().FirstOrDefault(cart => cart.ShoppingCartID == id) == null)
+            if (new MSSQLContext().GetCarts().FirstOrDefault(cart => cart.ShoppingCartID == id) == null || id == 1) //Check that the id exists, and that its not the default cart
             {
-                return null; //return null if the item you're trying to delete doesn't exist in the list
+                return null; //Return null if the item you're trying to delete doesn't exist in the list or is default cart
             }
             return new ShoppingCartDTO(new MSSQLContext().DeleteCart(id));
         }
+
+        //public async Task<ItemDTO> AddItemToCart()
+        //{
+
+        //}
     }
 }

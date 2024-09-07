@@ -8,7 +8,7 @@ namespace eCommerce.API.Controllers
 
     [ApiController] //specifies to swagger that this is an api endpoint
     [Route("[controller]")] //route to "localhost:7244/WeatherForecast" for example, "controller" in square brackets means remove that substring from the route "localhost:7244/WeatherForecastController"
-    public class InventoryController : ControllerBase //this is what gets called from the service proxy
+    public class InventoryController : ControllerBase //this is what gets called from the service proxy, this handled the user's requests
     {
         private readonly ILogger<InventoryController> _logger; //readonly access to _logger
         public InventoryController(ILogger<InventoryController> logger) //dependency injection of ILogger

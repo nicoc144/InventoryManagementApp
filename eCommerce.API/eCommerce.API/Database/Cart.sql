@@ -21,8 +21,7 @@ CREATE TABLE CARTITEMS(
 	, ItemInCartID INT /*ID of the item in the cart*/
 	, Quantity int NULL /*Quantity of the item in the cart*/
 	, Price numeric(10,2) NULL /*Price of the item in the cart (Can be different from the price in the inventory if there's a markdown or BOGO)"*/
-	, CartID int NOT NULL
-	, TotalForThisItem numeric(10,2) NULL
+	, CartID int NOT NULL /*ID of the cart the item is apart of*/
 )
 	
 --[STEP 4] CREATE A DEFAULT USER
@@ -74,6 +73,23 @@ CREATE PROCEDURE Cart.DeleteCart @cartID int
 AS
 DELETE CART where CartID = @cartID
 
+--[STEP 10] CREATE SCHEMA FOR THE ITEMS IN THE CART
+CREATE SCHEMA CartItems
+
+--[STEP 11] CREATE ADD FOR THE ITEMS IN THE CART
+CREATE PROCEDURE CartItems.AddItemToCart
+@CartID int
+, @ItemInCartID int
+, @Quantity int
+, @Price numeric(10,2)
+, @CartItemsID int output
+AS
+BEGIN
+	INSERT INTO CARTITEMS(CartID, ItemInCartID, Quantity, Price) 
+	VALUES(@CartID, @ItemInCartID, @Quantity, @Price)
+
+	SET @CartItemsID = SCOPE_IDENTITY()
+END
 
 ----------------------------
 --ADDITIONAL FUNCTIONALITY--
@@ -86,7 +102,7 @@ SELECT CartID, REPLACE(CartName, '''','') as CartName, UserID FROM CART ORDER BY
 select * from CART c
 inner join CARTITEMS ci on c.CartID = ci.CartId
 left join ITEM i on ci.ItemInCartID = i.ID
-where c.UserID = 1
+where c.UserID = 1  
 
 declare @newID int
 exec Cart.AddCart @CartName = 'NewCart1'
@@ -104,6 +120,17 @@ CREATE TABLE CARTITEMLINKS( /*In order to have a many to many relationship with 
 --INSERT VALUE INTO CARTITEMS GIVING THE CART ID, ITEM ID, ETC
 INSERT INTO CARTITEMS(ItemInCartID, Quantity, Price, CartID) VALUES(1, 20, 2.21, 1)
 INSERT INTO CARTITEMS(ItemInCartID, Quantity, Price, CartID) VALUES(2, 330, 22.51, 1)
+
+--ADD ITEM ID 1 INTO DEFAULT CART
+declare @newID int
+exec CartItems.AddItemToCart @CartID = 1
+, @ItemInCartID = 1
+, @Quantity = 6
+, @Price = 5.00
+, @CartItemsID = @newID out
+select @newID
+
+SELECT * FROM CartItems
 
 --CREATE A VIEW FOR THE CART VIEW
 create view CartView
@@ -126,6 +153,7 @@ left join ITEM i on ci.ItemID = i.ID
 select * from CartView
 
 --DROP PROCEDURE
+begin tran
 DROP PROCEDURE DeleteCart
 
 --CREATE A TABLE WHICH ONLY EXISTS FOR THIS SESSION/PROCESS USING # (Can't call this table in item.sql)

@@ -8,7 +8,7 @@ using WebStore.Library.Models;
 
 namespace eCommerce.API.Database
 {
-    public class  MSSQLContext() //Manages database connections for Inventory and Shop
+    public class  MSSQLContext() //manages database connections for inventory and shop, fetches the actual data from database
     {
         public Item AddItem(Item i) //ADD AND UPDATE
         {
@@ -250,6 +250,45 @@ namespace eCommerce.API.Database
                 }
             }
             return returnCart;
+        }
+
+        public List<Item> GetItemsForCart(int activeCartID) //READ
+        {
+            var items = new List<Item>();
+            using (SqlConnection SqlClient = new SqlConnection("Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
+            {
+                using (SqlCommand cmd = SqlClient.CreateCommand())
+                {
+                    //var sql = $"SELECT ID, REPLACE(name, '''','') as Name, Description, Price, Quantity FROM ITEM ORDER BY ID asc"; //The replace replaces the escaped single quote with nothing
+                    var sql = $"SELECT * from CART c inner join CARTITEMS ci on c.CartID = ci.CartId left join ITEM i on ci.ItemID = i.ID where c.UserID = 1 and c.CartID = @cartID";
+                    cmd.CommandType = CommandType.Text;
+                    cmd.Parameters.AddWithValue("@cartID", activeCartID); //Safer than using string interpolation to pass in the activeCartID
+                    cmd.CommandText = sql;
+                    
+
+                    try
+                    {
+                        SqlClient.Open();
+                        var reader = cmd.ExecuteReader(); //gives back a sql reader
+
+                        while (reader.Read())
+                        {
+                            items.Add(new Item
+                            { 
+                                ID = (int)reader["i.ID"],
+                                Name = (string)reader["i.Name"],
+                                Description = (string)reader["i.Description"],
+                                Price = (decimal)reader["ci.Price"],
+                                Quantity = (int)reader["ci.Quantity"]
+                            });
+                        }
+                        SqlClient.Close();
+                    }
+                    catch (Exception ex) { }
+                }
+            }
+            return items;
+
         }
     }
 }

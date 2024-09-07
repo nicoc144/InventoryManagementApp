@@ -4,7 +4,7 @@ using WebStore.Library.Models;
 
 namespace eCommerce.API.EC
 {
-    public class InventoryEC //The enterprise contoller does all of the "heavy lifting," gets specificly used by the controller
+    public class InventoryEC //the enterprise contoller does all of the "heavy lifting," called by the controller and handles the buisness logic
     {
 
         public InventoryEC() {}
