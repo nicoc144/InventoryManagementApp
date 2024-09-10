@@ -17,8 +17,8 @@ CREATE TABLE CART(
 
 --[STEP 3] CREATE THE TABLE FOR CART ITEMS
 CREATE TABLE CARTITEMS(
-	CartItemsID INT IDENTITY(1,1) NOT NULL
-	, ItemInCartID INT /*ID of the item in the cart*/
+	CartItemsTableID INT IDENTITY(1,1) NOT NULL /*ID for the CARTITEMS table */
+	, ItemID INT NOT NULL /*ID of the item in the cart*/
 	, Quantity int NULL /*Quantity of the item in the cart*/
 	, Price numeric(10,2) NULL /*Price of the item in the cart (Can be different from the price in the inventory if there's a markdown or BOGO)"*/
 	, CartID int NOT NULL /*ID of the cart the item is apart of*/
@@ -27,15 +27,8 @@ CREATE TABLE CARTITEMS(
 --[STEP 4] CREATE A DEFAULT USER
 INSERT INTO USERS(Username, PasswordHash) VALUES ('default', ';1234567890')
 
---[STEP 5] CREATE THE DEFAULT CART
+--[STEP 5] CREATE THE DEFAULT CART (This is required)
 INSERT INTO CART(CartName, UserID) VALUES('DefaultCart', 1)
-
---[OPTIONAL STEP] CREATE MORE CARTS
-INSERT INTO CART(CartName, UserID) VALUES('Wishlist1', 1)
-INSERT INTO CART(CartName, UserID) VALUES('Wishlist2', 1)
-
---[OPTIONAL STEP] CREATE AN ITEM INSIDE THE DEFAULT CART (MAKE SURE YOU AT LEAST HAVE ONE ITEM IN THE INVENTORY ITEMS LIST)
-INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(1, 20, 125.55, 1) /*Adds Item ID 1 into the cart*/
 
 --[STEP 6] CREATE SCHEMA FOR SHOPPING CART (SO YOU CAN HAVE MULTIPLE CARTS / WISHLISTS)
 CREATE SCHEMA Cart /*Put CREATE UPDATE DELETE in this schema for Cart */
@@ -48,7 +41,7 @@ CREATE PROCEDURE Cart.AddCart
 AS
 BEGIN
 	INSERT INTO CART(CartName, UserID) /*Don't include ID because the database is going to give it to you */
-	VALUES(@CartName, @UserID)
+	VALUES(@CartName, 1) /*Can change this later if integrating multiple users*/
 
 	SET @CartID = SCOPE_IDENTITY()
 END
@@ -79,16 +72,16 @@ CREATE SCHEMA CartItems
 --[STEP 11] CREATE ADD FOR THE ITEMS IN THE CART
 CREATE PROCEDURE CartItems.AddItemToCart
 @CartID int
-, @ItemInCartID int
+, @ItemID int
 , @Quantity int
 , @Price numeric(10,2)
-, @CartItemsID int output
+, @CartItemsTableID int output
 AS
 BEGIN
-	INSERT INTO CARTITEMS(CartID, ItemInCartID, Quantity, Price) 
-	VALUES(@CartID, @ItemInCartID, @Quantity, @Price)
+	INSERT INTO CARTITEMS(CartID, ItemID, Quantity, Price) 
+	VALUES(@CartID, @CartID, @Quantity, @Price)
 
-	SET @CartItemsID = SCOPE_IDENTITY()
+	SET @CartItemsTableID = SCOPE_IDENTITY()
 END
 
 ----------------------------
@@ -99,11 +92,29 @@ END
 SELECT CartID, REPLACE(CartName, '''','') as CartName, UserID FROM CART ORDER BY CartID asc
 
 --LOOK AT THE CARTS, CART ITEMS, AND USERS
-select * from CART c
-inner join CARTITEMS ci on c.CartID = ci.CartId
-left join ITEM i on ci.ItemInCartID = i.ID
+select * from CART c /*Select ALL from CART c*/
+inner join CARTITEMS ci on c.CartID = ci.CartId /*Inner join CART with CARTITEMS where their CartID's are equal*/
+left join ITEM i on ci.ItemID = i.ID /*Left join ITEM with CARTITEMS where their ItemID's are equal*/
 where c.UserID = 1  
+/*On clause describes how two tables are related, and controls which rows from the two tables are paired together*/
+/*Where clause is used to filter rows after the tables are joined, controls which rows are displayed*/
 
+--GET() ITEMS, this is the sql code used in the API get() statement for cart items
+SELECT c.CartID as cartID,
+i.ID as itemID, i.[Name], i.[Description], ci.Price, ci.Quantity
+from CART c
+inner join CARTITEMS ci ON c.CartID = ci.CartID
+left join ITEM i ON ci.ItemID = i.ID
+WHERE c.UserID = 1 AND c.CartID = @cartID
+
+--CREATE MORE CARTS
+INSERT INTO CART(CartName, UserID) VALUES('Wishlist1', 1)
+INSERT INTO CART(CartName, UserID) VALUES('Wishlist2', 1)
+
+--CREATE AN ITEM INSIDE THE DEFAULT CART (MAKE SURE YOU AT LEAST HAVE ONE ITEM IN THE INVENTORY ITEMS LIST)
+INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(1, 20, 125.55, 1) /*Adds Item ID 1 into the cart*/
+
+--Create a new cart
 declare @newID int
 exec Cart.AddCart @CartName = 'NewCart1'
 , @UserID = 1
@@ -123,14 +134,15 @@ INSERT INTO CARTITEMS(ItemInCartID, Quantity, Price, CartID) VALUES(2, 330, 22.5
 
 --ADD ITEM ID 1 INTO DEFAULT CART
 declare @newID int
-exec CartItems.AddItemToCart @CartID = 1
-, @ItemInCartID = 1
-, @Quantity = 6
+exec CartItems.AddItemToCart @CartID = 2
+, @ItemID = 2
+, @Quantity = 3
 , @Price = 5.00
-, @CartItemsID = @newID out
+, @CartItemsTableID = @newID out
 select @newID
 
-SELECT * FROM CartItems
+/*Display everything from the carts and cart items table*/
+SELECT * FROM Cart c full outer join CartItems ci on ci.CartID = c.CartID
 
 --CREATE A VIEW FOR THE CART VIEW
 create view CartView

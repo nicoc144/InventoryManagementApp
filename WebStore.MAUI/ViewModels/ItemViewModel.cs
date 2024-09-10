@@ -113,20 +113,20 @@ namespace WebStore.MAUI.ViewModels
             }
         }
 
-        public decimal TotalForThisItem
-        {
-            get
-            {
-                return Item?.TotalForThisItem ?? 0m;
-            }
-            set
-            {
-                if (Item != null)
-                {
-                    Item.TotalForThisItem = value;
-                }
-            }
-        }
+        //public decimal TotalForThisItem
+        //{
+        //    get
+        //    {
+        //        return Item?.TotalForThisItem ?? 0m;
+        //    }
+        //    set
+        //    {
+        //        if (Item != null)
+        //        {
+        //            Item.TotalForThisItem = value;
+        //        }
+        //    }
+        //}
 
         public double Markdown
         {
@@ -275,10 +275,7 @@ namespace WebStore.MAUI.ViewModels
  
         public void AddItemToCart()  //Adds or updates Item in cart
         {
-            ShoppingCartServiceProxy.Current.AddToCart(Item);
+            //ShoppingCartServiceProxy.Current.AddToCart(Item);
         }
-
-
-
     }
 }

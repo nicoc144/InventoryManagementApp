@@ -18,7 +18,6 @@ namespace WebStore.MAUI.ViewModels
         public ShopManagementViewModel()
         {
             ItemToBuy = new ItemViewModel();
-            SelectedCart = new CartViewModel();
             SetCartByID();
         }
 
@@ -77,10 +76,7 @@ namespace WebStore.MAUI.ViewModels
         //private Item itemToBuy; //set this to private to ensure that we are not hitting the setter execpt for the first time
         public ItemViewModel ItemToBuy { get; set; } //"ItemVeiwModel" being set to "Item" was causing problems in the professor's example
 
-        public CartViewModel SelectedCart { get; set; }
-
         //public Item ItemToBuy { get; set; } //similar to selectedItem in inventorymanagementview code behind
-
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")

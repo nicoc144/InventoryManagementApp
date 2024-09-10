@@ -38,9 +38,9 @@ namespace eCommerce.API.EC
             return new ShoppingCartDTO(new MSSQLContext().DeleteCart(id));
         }
 
-        //public async Task<ItemDTO> AddItemToCart()
-        //{
-
-        //}
+        public async Task<ItemDTO> AddItemToCart(ItemDTO i, int activeCartID)
+        {
+            return new ItemDTO(new MSSQLContext().AddItemToCart(new Item(i), activeCartID));
+        }
     }
 }
