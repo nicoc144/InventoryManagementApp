@@ -275,7 +275,7 @@ namespace WebStore.MAUI.ViewModels
  
         public void AddItemToCart()  //Adds or updates Item in cart
         {
-            //ShoppingCartServiceProxy.Current.AddToCart(Item);
+            ShoppingCartServiceProxy.Current.AddItemToCart(Item);
         }
     }
 }

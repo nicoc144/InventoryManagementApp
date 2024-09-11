@@ -26,13 +26,13 @@ namespace eCommerce.API.Controllers
             return await new ShopEC().AddOrUpdate(p);
         }
 
-        [HttpPost("additem")]
-        public async Task<ItemDTO> AddOrUpdateItem([FromBody] ItemDTO i)
+        [HttpPost("{id}")] //Need to send in an id because we need to know what the user's active cart is
+        public async Task<ItemDTO> AddOrUpdateItem([FromBody] ItemDTO i, int id)
         {
-            return await new ShopEC().AddItemToCart(i);
+            return await new ShopEC().AddItemToCart(i, id);
         }
 
-        [HttpDelete("/Shop/{id}")]
+        [HttpDelete("{id}")]
         public async Task<ShoppingCartDTO> Delete(int id)
         {
             return await new ShopEC().Delete(id);

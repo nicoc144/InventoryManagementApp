@@ -30,7 +30,7 @@ namespace WebStore.MAUI.ViewModels
         public ItemViewModel SelectedItem {  get; set; } 
         public InventoryManagementViewModel()
         {
-
+            RefreshItems();
         }
 
         public async Task RefreshItems() 

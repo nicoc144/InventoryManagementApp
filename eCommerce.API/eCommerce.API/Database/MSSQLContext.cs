@@ -252,7 +252,7 @@ namespace eCommerce.API.Database
             return returnCart;
         }
 
-        public List<ItemDTO> GetItemsForCart(int activeCartID) //READ
+        public List<ItemDTO> GetItemsForCart(int activeCartID) //READ FOR ITEMS IN CART
         {
             var items = new List<ItemDTO>();
             using (SqlConnection SqlClient = new SqlConnection("Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
@@ -280,7 +280,6 @@ namespace eCommerce.API.Database
                                 Price = (decimal)reader["Price"],
                                 Quantity = (int)reader["Quantity"]
                             });
-                            //var cartID = (int)reader["CartID"];
                         }
                         SqlClient.Close();
                     }
@@ -290,7 +289,7 @@ namespace eCommerce.API.Database
             return items;
         }
 
-        public Item AddItemToCart(Item i)
+        public Item AddItemToCart(Item i, int activeCartID) //ADD FOR INDIVIDUAL ITEMS IN THE CART
         {
             using (SqlConnection SqlClient = new SqlConnection(@"Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
             {
@@ -304,9 +303,11 @@ namespace eCommerce.API.Database
                         cmd.Parameters.Add(new SqlParameter("ItemID", i.ID));
                         cmd.Parameters.Add(new SqlParameter("Quantity", i.Quantity));
                         cmd.Parameters.Add(new SqlParameter("Price", i.Price));
-                        cmd.Parameters.Add(new SqlParameter("ItemID", i.ID));
-                        cmd.Parameters.Add(new SqlParameter("CartID", activeCartID));
-
+                        cmd.Parameters.Add(new SqlParameter("CartID", activeCartID)); //Need to set the cart ID for this item to the ID we passed in
+                                                                                      //this is how the database knows what Shopping Cart this item belongs to.
+                        var id = new SqlParameter("CartItemsTableID", SqlDbType.Int); //Make the parameter into an L value
+                        id.Direction = ParameterDirection.Output; //Return the value to me (the database makes the value since its an id)
+                        cmd.Parameters.Add(id); //Add L value
                         try
                         {
                             SqlClient.Open();

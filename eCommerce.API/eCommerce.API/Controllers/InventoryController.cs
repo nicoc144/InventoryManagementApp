@@ -31,7 +31,7 @@ namespace eCommerce.API.Controllers
         //[HttpGet("Delete/{id}")] //it's possible to use this for delete, but not ideal because it causes security concerns
         //like allowing people to use the url to delete things out of the database
 
-        [HttpDelete("/Inventory/{id}")]
+        [HttpDelete("{id}")] 
         public async Task<ItemDTO> Delete(int id)
         {
             return await new InventoryEC().Delete(id);

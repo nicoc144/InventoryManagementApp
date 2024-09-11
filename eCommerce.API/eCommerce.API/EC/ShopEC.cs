@@ -12,11 +12,6 @@ namespace eCommerce.API.EC
             return new MSSQLContext().GetCarts().Select(i => new ShoppingCartDTO(i));
         }
 
-        public async Task<IEnumerable<ItemDTO>> GetCartItems(int activeCartID)
-        {
-            return new MSSQLContext().GetItemsForCart(activeCartID).Select(i => new ItemDTO(i));
-        }
-
         public async Task<ShoppingCartDTO> AddOrUpdate(ShoppingCartDTO c)
         {
             if (c.ShoppingCartID != 0) //If this is an update
@@ -40,7 +35,21 @@ namespace eCommerce.API.EC
 
         public async Task<ItemDTO> AddItemToCart(ItemDTO i, int activeCartID)
         {
-            return new ItemDTO(new MSSQLContext().AddItemToCart(new Item(i), activeCartID));
+            Item ItemInInventory = new MSSQLContext().GetItems().FirstOrDefault(item => item.ID == i.ID); //Look for the item in the inventory
+            if (ItemInInventory == null || i == null || activeCartID == 0)
+            {
+                return null;
+            }
+            ItemDTO ItemInCart = new ItemDTO(new MSSQLContext().AddItemToCart(new Item(i), activeCartID)); //This is the item being added, along with desired quantity
+            int UpdatedInvQuantity = ItemInInventory.Quantity - i.Quantity; //This is the new inventory quantity
+            if(UpdatedInvQuantity < 0) //Check that the new quantity is not negative
+            {
+                return null;
+            }
+            ItemInInventory.Quantity = UpdatedInvQuantity; //Set the new quantity
+            new MSSQLContext().AddItem(new Item(ItemInInventory)); //Update the item in the inventory with the reduced quant
+
+            return ItemInCart;
         }
     }
 }

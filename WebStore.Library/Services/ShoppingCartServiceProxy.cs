@@ -76,10 +76,12 @@ namespace WebStore.Library.Services
             return cartToAddOrUpdate;
         }
 
-        //public async Task<ItemDTO> AddItemToCart(ItemDTO? item)
-        //{
-            
-        //}
+        public async Task<ItemDTO> AddItemToCart(ItemDTO? item)
+        {
+            var result = await new WebRequestHandler().Post($"/Shop/{SelectedShoppingCartID}", item);
+            var itemToAdd = JsonConvert.DeserializeObject<ItemDTO>(result);
+            return itemToAdd;
+        }
 
         public async Task<ShoppingCartDTO> DeleteCart(int id) //deletes an item based on the id passed in
         {
