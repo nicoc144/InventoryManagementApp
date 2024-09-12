@@ -266,7 +266,7 @@ namespace eCommerce.API.Database
                 using (SqlCommand cmd = SqlClient.CreateCommand())
                 {
                     //var sql = $"SELECT * from CART c inner join CARTITEMS ci on c.CartID = ci.CartId left join ITEM i on ci.ItemID = i.ID where c.UserID = 1 and c.CartID = @cartID";
-                    var sql = $"SELECT c.CartID as cartID, ci.CartItemsTableID as cartItemsTableID, i.Markdown as ItemMarkdown, i.ID as itemID, i.[Name], i.[Description], ci.Price, ci.Quantity from CART c inner join CARTITEMS ci ON c.CartID = ci.CartID left join ITEM i ON ci.ItemID = i.ID WHERE c.UserID = 1 AND c.CartID = @cartID" ;
+                    var sql = $"SELECT c.CartID as cartID, ci.CartItemsTableID as cartItemsTableID, i.Markdown as ItemMarkdown, i.IsBOGO as ItemIsBOGO, i.ID as itemID, i.[Name], i.[Description], ci.Price, ci.Quantity from CART c inner join CARTITEMS ci ON c.CartID = ci.CartID left join ITEM i ON ci.ItemID = i.ID WHERE c.UserID = 1 AND c.CartID = @cartID" ;
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.AddWithValue("@cartID", activeCartID); //Safer than using string interpolation to pass in the activeCartID
                     cmd.CommandText = sql;
@@ -295,6 +295,8 @@ namespace eCommerce.API.Database
                                 Description = (string)reader["Description"],
                                 Price = calcPrice,
                                 Quantity = (int)reader["Quantity"],
+                                IsBOGO = (bool)reader["ItemIsBOGO"],
+                                Markdown = (double)reader["ItemMarkdown"]
                             });
                         }
                         SqlClient.Close();

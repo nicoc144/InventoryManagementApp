@@ -20,6 +20,8 @@ namespace WebStore.Library.DTO
 
         public decimal ShoppingCartTotalAfterTax { get; set; }
 
+        public double ShoppingCartTax {  get; set; }
+
         public List<ItemDTO>? Contents { get; set; } //this is a list of items
 
         public ShoppingCartDTO()
@@ -35,6 +37,7 @@ namespace WebStore.Library.DTO
             ShoppingCartTotal = s.ShoppingCartTotal;
             ShoppingCartTotalAfterTax = s.ShoppingCartTotalAfterTax;
             Contents = s.Contents;
+            ShoppingCartTax = s.ShoppingCartTax;
         }
     }
 }

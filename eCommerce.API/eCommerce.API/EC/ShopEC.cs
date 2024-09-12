@@ -9,7 +9,55 @@ namespace eCommerce.API.EC
         public ShopEC() { }
         public async Task<IEnumerable<ShoppingCartDTO>> Get()
         {
-            return new MSSQLContext().GetCarts().Select(i => new ShoppingCartDTO(i));
+            var carts = new MSSQLContext().GetCarts();
+            decimal total = 0;
+            return carts.Select(cart =>
+            {
+                foreach(var item in cart.Contents)
+                {
+                    if(item.IsBOGO)
+                    {
+                        if(item.Quantity % 2 == 0)
+                        {
+                            total = total + (item.Price * (item.Quantity / 2));
+                        }
+                        else
+                        {
+                            total = total + (item.Price * ((item.Quantity / 2)+1));
+                        }
+                    }
+                    else
+                    {
+                        total = total + (item.Price * item.Quantity);
+                    }
+                }
+
+                //I'm chosing to calculate the tax here since having this on the client side could cause vulnerabilities.
+                //This data is not saved in the database, however it's saved in the JSON blob for shop, and is calculated everytime
+                //the Get() is called.
+                cart.ShoppingCartTax = GetShoppingCartTax().Result;
+
+                decimal totalAfterTax = total * (Decimal)(cart.ShoppingCartTax / 100); //Calculate the tax in dollars
+
+                totalAfterTax = totalAfterTax + total; //Calculate the total after tax by adding the tax in dollars to the total
+
+                var shoppingCart = new ShoppingCartDTO(cart) //Set the values
+                {
+                    ShoppingCartTotal = Math.Round(total,2),
+                    ShoppingCartTax = cart.ShoppingCartTax,
+                    ShoppingCartTotalAfterTax = Math.Round(totalAfterTax,2)
+                };
+                return shoppingCart;
+            });
+        }
+
+        public async Task<double> GetShoppingCartTax() //In this function you should call some API that gives you the tax rate.
+                                                       //Right now this is just a simulation.
+        {
+            double CurrentTax = 0;
+            Random random = new Random();
+            CurrentTax = Math.Round((random.NextDouble() * (7-5)+5), 2); //Multiply the difference of 7-5 + 5 for a value between 7 and 5
+            return CurrentTax;
         }
 
         public async Task<ShoppingCartDTO> AddOrUpdate(ShoppingCartDTO c)

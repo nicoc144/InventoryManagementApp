@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,6 @@ namespace WebStore.Library.Services
     {
         public static int SelectedShoppingCartID { get; private set; } //Keeps track of the shopping cart being added to currently
                                                                        //Keep this on the client side
-        public static double TaxForAllItems { get; private set; }
 
         //initilize a list of shopping carts
         private ShoppingCartServiceProxy()
@@ -27,9 +27,6 @@ namespace WebStore.Library.Services
             {
                 SelectedShoppingCartID = 1;
             }
-            CalculateTotalBeforeTax(carts);
-            CalculateTotalAfterTax(carts);
-
         }
 
         private static ShoppingCartServiceProxy? instance;
@@ -67,8 +64,6 @@ namespace WebStore.Library.Services
                                                                           //The "await" keyword specifies to not move on until the webrequesthandler successfully retrieves the full inventory list (ie this line of code is done executing)
             var deserializedResult = JsonConvert.DeserializeObject<List<ShoppingCartDTO>>(result); //convert json blob into list of ItemDTO
             carts = deserializedResult?.ToList() ?? new List<ShoppingCartDTO>(); //return empty if connection to data center is lost
-            CalculateTotalBeforeTax(carts);
-            CalculateTotalAfterTax(carts);
             return carts;
         }
 
@@ -90,36 +85,8 @@ namespace WebStore.Library.Services
         {
             var result = await new WebRequestHandler().Post($"/Shop/{SelectedShoppingCartID}", item);
             var itemToAdd = JsonConvert.DeserializeObject<ItemDTO>(result);
-            CalculateTotalBeforeTax(carts);
-            CalculateTotalAfterTax(carts);
             return itemToAdd;
         }
-
-        public decimal CalculateTotalBeforeTax(List<ShoppingCartDTO> cart)
-        {
-            decimal totalBefore = 0;
-            for(int i = 0; i < cart[SelectedShoppingCartID-1].Contents.Count; i++)
-            {
-                totalBefore = totalBefore + (cart[SelectedShoppingCartID-1].Contents[i].Quantity * cart[SelectedShoppingCartID-1].Contents[i].Price);
-            }
-            cart[SelectedShoppingCartID-1].ShoppingCartTotal = totalBefore;
-            return totalBefore;
-        }
-
-        public decimal CalculateTotalAfterTax(List<ShoppingCartDTO> cart)
-        {
-            decimal totalAfter = CalculateTotalBeforeTax(carts);
-            decimal calculateTax = totalAfter * (Decimal)(TaxForAllItems/100);
-            
-            cart[SelectedShoppingCartID - 1].ShoppingCartTotalAfterTax = Math.Round(totalAfter + calculateTax, 2);
-            return totalAfter;
-        }
-
-        public static void SetTaxForAllItems(double d)
-        {
-            TaxForAllItems = d;
-        }
-
 
         public static void SetCurrentShoppingCart(int id)
         {
@@ -129,104 +96,5 @@ namespace WebStore.Library.Services
             }
             SelectedShoppingCartID = id;
         }
-
-
-          //This code is bad and confusing
-    //    public void AddToCart(ItemDTO newItem) //adding a product in a cart, updates quantity automatically if the item is already in the cart
-    //    {
-    //        ShoppingCartDTO selectedCart = ShoppingCartServiceProxy.Current.Carts.FirstOrDefault(c => c.ShoppingCartID == SelectedShoppingCartID);
-
-    //        if (selectedCart == null || selectedCart.Contents == null)
-    //        {
-    //            return;
-    //        }
-
-    //        //create varaible existingItem, first check that cart and contents are not null, then loop through all of the existing items
-    //        //looking for the first item that matches the id. If item cant be found return default (or null). "existingItems" is just a placeholder name
-    //        //for Contents in shopping cart
-    //        var existingItem = selectedCart?.Contents?.FirstOrDefault(existingItems => existingItems.ID == newItem.ID);
-                    
-    //        //remove the quantity from the inventory
-    //        var inventoryItem = ItemServiceProxy.Current.Items.FirstOrDefault(invItem => invItem.ID == newItem.ID);
-
-    //        if (inventoryItem == null || existingItem?.Quantity > inventoryItem.Quantity || newItem?.Quantity > inventoryItem.Quantity)
-    //        {
-    //            return; //return nothing if the inventory item is null or if the requested quantity is greater than the inventory quantity
-    //        }
-    //        inventoryItem.Quantity -= newItem.Quantity; //reduce inventory quantity
-
-    //        if (existingItem != null) //check if the item already exists in the shopping cart
-    //        {
-    //            existingItem.Quantity += newItem.Quantity; //update the quntity for this existing item
-
-    //            existingItem.IsBOGO = newItem.IsBOGO; //update the "IsBOGO" value to the newItem's value for IsBOGO
-
-    //            existingItem.Markdown = newItem.Markdown; //updtae the "Markdown" value to the newItem's value
-
-    //            if (existingItem.IsBOGO == true) //existing item is BOGO
-    //            {
-    //                if (existingItem.Quantity % 2 == 0) //check if the item quantity youre adding is even
-    //                {
-    //                    //calculate the new total for this item, if you add a bogo item one by one this will calculate the correct total for the item
-    //                    existingItem.TotalForThisItem = existingItem.Quantity * (newItem.Price / 2);
-    //                }
-    //                else
-    //                {
-    //                    //same deal as the code under the if statement, just for odd quantity
-    //                    existingItem.TotalForThisItem = (existingItem.Quantity - 1) * (newItem.Price / 2);
-    //                    existingItem.TotalForThisItem += newItem.Price;
-    //                }
-    //            }
-    //            else //existing item isn't BOGO
-    //            {
-    //                existingItem.TotalForThisItem = existingItem.Quantity * existingItem.Price;
-    //            }
-    //        }
-    //        else
-    //        {
-    //            if (newItem.IsBOGO == true) //new item is BOGO
-    //            {
-    //                if (newItem.Quantity % 2 == 0) //check if the item quantity youre adding is even
-    //                {
-    //                    //calculate the total for new bogo item with even quant
-    //                    newItem.TotalForThisItem = newItem.Quantity * (newItem.Price / 2);
-    //                    selectedCart.Contents.Add(newItem);
-    //                }
-    //                else
-    //                {
-    //                    //calculate the total for new item with odd quant
-    //                    newItem.TotalForThisItem = (newItem.Quantity - 1) * (newItem.Price / 2);
-    //                    newItem.TotalForThisItem += newItem.Price;
-    //                    selectedCart.Contents.Add(newItem);
-    //                }
-    //            }
-    //            else //new item isn't BOGO
-    //            {
-    //                newItem.TotalForThisItem = newItem.Quantity * newItem.Price; //calculate total for this item being added to cart
-    //                selectedCart.Contents.Add(newItem); //add (item does not already exist)
-    //            }
-    //        }
-            
-    //        Decimal TempTotal = 0m; //Finds the total after item markdown
-
-    //        for (int i = 0; i < selectedCart.Contents.Count(); i++)
-    //        {
-    //            TempTotal += selectedCart.Contents[i].TotalForThisItem - (selectedCart.Contents[i].TotalForThisItem * ((Decimal)selectedCart.Contents[i].Markdown / 100));
-    //        }
-
-    //        selectedCart.ShoppingCartTotal = Math.Round(TempTotal, 2);
-
-    //        //Loop through all of the contents of the cart and add their individual totals
-    //        //Cart.ShoppingCartTotal = Cart?.Contents?.Sum(c => c.TotalForThisItem) ?? 0m;
-
-    //        //Set the total after tax to the same value (to be subtracted from later)
-    //        selectedCart.ShoppingCartTotalAfterTax = selectedCart.ShoppingCartTotal;
-
-    //        //Calculate the tax ammount in dollar amount
-    //        Decimal TaxInDollars = Math.Round(selectedCart.ShoppingCartTotal * ((Decimal)TaxForAllItems/ 100), 2);
-
-    //        //Subtract the tax from the shopping cart total and set it to ShoppingCartTotalAfterTax
-    //        selectedCart.ShoppingCartTotalAfterTax += TaxInDollars;
-    //    }
     }
 }

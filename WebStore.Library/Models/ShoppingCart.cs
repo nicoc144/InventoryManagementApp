@@ -23,6 +23,8 @@ namespace WebStore.Library.Models
 
         public decimal ShoppingCartTotalAfterTax { get; set; }
 
+        public double ShoppingCartTax { get; set; }
+
         //Un-used properties to demonstrate why DTOs are useful (ShoppingCartDTO doesn't have these properties because they're not used
         //in the program)
         public decimal DonateToCharityAmmount { get; set; }
@@ -43,11 +45,12 @@ namespace WebStore.Library.Models
             ShoppingCartTotal = s.ShoppingCartTotal;
             ShoppingCartTotalAfterTax = s.ShoppingCartTotalAfterTax;
             Contents = s.Contents;
+            ShoppingCartTax = s.ShoppingCartTax;
         }
 
         public override string ToString()
         {
-            return $"[{ShoppingCartID}] {ShoppingCartName} /USR[{UserID}] / ${ShoppingCartTotal} / ${ShoppingCartTotalAfterTax} / {Contents}";
+            return $"[{ShoppingCartID}] {ShoppingCartName} /USR[{UserID}] / ${ShoppingCartTotal} / ${ShoppingCartTax} / ${ShoppingCartTotalAfterTax} / {Contents}";
         }
     }
 }

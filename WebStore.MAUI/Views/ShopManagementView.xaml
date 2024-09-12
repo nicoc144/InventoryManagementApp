@@ -127,7 +127,7 @@
                     <Label
                         Grid.Row="1"
                         Grid.Column="1"
-                        Text="{Binding Tax}"
+                        Text="{Binding CurrentCart.ShoppingCartTax}"
                         />
                     <Label
                         Grid.Row="2"

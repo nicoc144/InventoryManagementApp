@@ -36,11 +36,6 @@
         Route="AddToCart" />
 
     <ShellContent
-        Title="Tax Configuration"
-        ContentTemplate="{DataTemplate views:TaxConfigView}"
-        Route="TaxConfig" />
-
-    <ShellContent
         Title="Cart Management View"
         ContentTemplate="{DataTemplate views:CartManagementView}"
         Route="CartManagementView" />

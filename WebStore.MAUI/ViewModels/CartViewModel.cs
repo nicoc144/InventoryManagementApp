@@ -63,6 +63,15 @@ namespace WebStore.MAUI.ViewModels
             }
         }
 
+        public double ShoppingCartTax
+        {
+            get
+            {
+                return ShoppingCart.ShoppingCartTax;
+
+            }
+        }
+
         public String IsActive
         {
             get
