@@ -40,13 +40,15 @@ namespace eCommerce.API.EC
             {
                 return null;
             }
+           
             ItemDTO ItemInCart = new ItemDTO(new MSSQLContext().AddItemToCart(new Item(i), activeCartID)); //This is the item being added, along with desired quantity
             int UpdatedInvQuantity = ItemInInventory.Quantity - i.Quantity; //This is the new inventory quantity
+            
             if(UpdatedInvQuantity < 0) //Check that the new quantity is not negative
             {
                 return null;
             }
-            ItemInInventory.Quantity = UpdatedInvQuantity; //Set the new quantity
+            ItemInInventory.Quantity = UpdatedInvQuantity; //Set the new quantity for the item in inventory
             new MSSQLContext().AddItem(new Item(ItemInInventory)); //Update the item in the inventory with the reduced quant
 
             return ItemInCart;

@@ -23,7 +23,7 @@ CREATE TABLE CARTITEMS(
 	, Price numeric(10,2) NULL /*Price of the item in the cart (Can be different from the price in the inventory if there's a markdown or BOGO)"*/
 	, CartID int NOT NULL /*ID of the cart the item is apart of*/
 )
-	
+
 --[STEP 4] CREATE A DEFAULT USER
 INSERT INTO USERS(Username, PasswordHash) VALUES ('default', ';1234567890')
 
@@ -77,11 +77,35 @@ CREATE PROCEDURE CartItems.AddItemToCart
 , @Price numeric(10,2)
 , @CartItemsTableID int output
 AS
-BEGIN
+BEGIN	
 	INSERT INTO CARTITEMS(CartID, ItemID, Quantity, Price) 
-	VALUES(@CartID, @CartID, @Quantity, @Price)
+	VALUES(@CartID, @ItemID, @Quantity, @Price)
 
 	SET @CartItemsTableID = SCOPE_IDENTITY()
+END
+
+--[STEP 12] CREATE UPDATE FOR ITEMS IN THE CART (UPDATING QUANTITY FOR ITEMS THAT ALREADY EXIST)
+CREATE PROCEDURE CartItems.UpdateItemInCart
+@CartID int
+, @ItemID int
+, @Quantity int
+, @Price numeric(10,2)
+AS
+BEGIN
+	declare @CartItemsTableID int;
+	SELECT @CartItemsTableID = CartItemsTableID
+	FROM CARTITEMS
+	WHERE CartID = @CartID AND ItemID = @ItemID
+
+	IF @CartItemsTableID IS NOT NULL
+	BEGIN
+		UPDATE CARTITEMS
+		SET
+			Quantity = @Quantity
+			, Price = @Price /*If the price changes in the inventory, this will also update the price for the item*/
+		WHERE
+			CartID = @CartID AND ItemID = @ItemID AND CartItemsTableID = @CartItemsTableID
+	END
 END
 
 ----------------------------
@@ -96,16 +120,21 @@ select * from CART c /*Select ALL from CART c*/
 inner join CARTITEMS ci on c.CartID = ci.CartId /*Inner join CART with CARTITEMS where their CartID's are equal*/
 left join ITEM i on ci.ItemID = i.ID /*Left join ITEM with CARTITEMS where their ItemID's are equal*/
 where c.UserID = 1  
+
+select * from CARTITEMS
 /*On clause describes how two tables are related, and controls which rows from the two tables are paired together*/
 /*Where clause is used to filter rows after the tables are joined, controls which rows are displayed*/
 
 --GET() ITEMS, this is the sql code used in the API get() statement for cart items
 SELECT c.CartID as cartID,
+ci.CartItemsTableID as cartItemsTableID,
 i.ID as itemID, i.[Name], i.[Description], ci.Price, ci.Quantity
 from CART c
 inner join CARTITEMS ci ON c.CartID = ci.CartID
 left join ITEM i ON ci.ItemID = i.ID
-WHERE c.UserID = 1 AND c.CartID = @cartID
+WHERE c.UserID = 1
+
+select * from item
 
 --CREATE MORE CARTS
 INSERT INTO CART(CartName, UserID) VALUES('Wishlist1', 1)
@@ -114,12 +143,53 @@ INSERT INTO CART(CartName, UserID) VALUES('Wishlist2', 1)
 --CREATE AN ITEM INSIDE THE DEFAULT CART (MAKE SURE YOU AT LEAST HAVE ONE ITEM IN THE INVENTORY ITEMS LIST)
 INSERT INTO CARTITEMS(ItemID, Quantity, Price, CartID) VALUES(1, 20, 125.55, 1) /*Adds Item ID 1 into the cart*/
 
---Create a new cart
+--CREATE A NEW CART
 declare @newID int
 exec Cart.AddCart @CartName = 'NewCart1'
 , @UserID = 1
 , @CartID = @newID out
 select @newID
+
+--THIS IS ANOTHER WAY TO ADD ITEM TO CART, DECIDED TO HANDLE THE LOGIC FOR UPDATE INSIDE THE EC INSTEAD OF IN THE DATABASE
+--I UNDERSTAND THAT THIS MAY BE MORE EFFICIENT, BUT IT WOULD BE HARDER TO DEBUG AND MAINTAIN
+CREATE PROCEDURE CartItems.AddItemToCart
+@CartID int
+, @ItemID int
+, @Quantity int
+, @Price numeric(10,2)
+, @CartItemsTableID int output
+AS
+BEGIN
+	IF EXISTS( /*check if a condition is true, IF is used for logic to decide whether or not to execute code
+				while WHERE is used to filter a result set*/
+		SELECT 1 FROM CARTITEMS /*check that there is at least 1 row in CARTITEMS, select 1 is more efficient
+								than select * because it's just checking that a row exists and doesnt retrieve any of the column data*/
+		WHERE CartID = @CartID AND ItemID = @ItemID /*check that the cartID and itemID of the add match any items in the cartitems list*/
+	)
+	BEGIN
+		--UPDATE if item exists
+		UPDATE CARTITEMS
+		SET
+			Quantity = Quantity + @Quantity
+			Price = @Price
+		WHERE CartID = @CartID AND ItemID = @ItemID
+
+		SELECT @ CartItemsTableID = CartItemsTableID
+		FROM CARTITEMS
+		WHERE CartID = @CartID and ItemID = @ItemID
+	END
+	ELSE
+	BEGIN
+		--ADD
+		INSERT INTO CARTITEMS(CartID, ItemID, Quantity, Price) 
+        VALUES(@CartID, @ItemID, @Quantity, @Price)
+
+        SET @CartItemsTableID = SCOPE_IDENTITY()
+	
+	END
+END
+
+
 
 --CREATE CART ITEM LINKS (FOR MULTI SELECT OR DRAG AND DROP)
 CREATE TABLE CARTITEMLINKS( /*In order to have a many to many relationship with cart items this is needed*/

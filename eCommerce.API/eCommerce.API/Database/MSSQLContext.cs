@@ -25,6 +25,8 @@ namespace eCommerce.API.Database
                         cmd.Parameters.Add(new SqlParameter("Description", i.Description));
                         cmd.Parameters.Add(new SqlParameter("Quantity", i.Quantity));
                         cmd.Parameters.Add(new SqlParameter("Price", i.Price));
+                        cmd.Parameters.Add(new SqlParameter("IsBogo", i.IsBOGO));
+                        cmd.Parameters.Add(new SqlParameter("Markdown", i.Markdown));
 
                         //All of the incrementing for the ID is handled by the 3 lines of code below
                         //Command.Parameters.Add(new SqlParameter("ID", ParameterDirection.Output, i.ID)); //Doesn't work
@@ -56,6 +58,8 @@ namespace eCommerce.API.Database
                         cmd.Parameters.Add(new SqlParameter("Quantity", i.Quantity));
                         cmd.Parameters.Add(new SqlParameter("Price", i.Price));
                         cmd.Parameters.Add(new SqlParameter("ID", i.ID));
+                        cmd.Parameters.Add(new SqlParameter("IsBogo", i.IsBOGO));
+                        cmd.Parameters.Add(new SqlParameter("Markdown", i.Markdown));
 
                         try
                         {
@@ -79,7 +83,7 @@ namespace eCommerce.API.Database
                 using (SqlCommand cmd = SqlClient.CreateCommand())
                 {
                     //var sql = $"SELECT * FROM ITEM";
-                    var sql = $"SELECT ID, REPLACE(name, '''','') as Name, Description, Price, Quantity FROM ITEM ORDER BY ID asc"; //The replace replaces the escaped single quote with nothing
+                    var sql = $"SELECT ID, REPLACE(name, '''','') as Name, Description, Price, Quantity, IsBOGO, Markdown FROM ITEM ORDER BY ID asc"; //The replace replaces the escaped single quote with nothing
                     cmd.CommandType = CommandType.Text;
                     cmd.CommandText= sql;
 
@@ -96,7 +100,9 @@ namespace eCommerce.API.Database
                                 Name = (string)reader["Name"],
                                 Description = (string)reader["Description"],
                                 Price = (decimal)reader["Price"],
-                                Quantity = (int)reader["Quantity"]
+                                Quantity = (int)reader["Quantity"],
+                                IsBOGO = (bool)reader["IsBOGO"],
+                                Markdown = (double)reader["Markdown"]
                             });
                         }
                         SqlClient.Close();
@@ -157,7 +163,7 @@ namespace eCommerce.API.Database
                                 ShoppingCartID = (int)reader["CartID"],
                                 ShoppingCartName = (string)reader["CartName"],
                                 UserID = (int)reader["UserID"],
-                                Contents = GetItemsForCart((int)reader["CartID"])
+                                Contents = GetItemsForCart((int)reader["CartID"]) //get the items inside each cart
                             });
                         }
                         SqlClient.Close();
@@ -260,7 +266,7 @@ namespace eCommerce.API.Database
                 using (SqlCommand cmd = SqlClient.CreateCommand())
                 {
                     //var sql = $"SELECT * from CART c inner join CARTITEMS ci on c.CartID = ci.CartId left join ITEM i on ci.ItemID = i.ID where c.UserID = 1 and c.CartID = @cartID";
-                    var sql = $"SELECT c.CartID as cartID, i.ID as itemID, i.[Name], i.[Description], ci.Price, ci.Quantity from CART c inner join CARTITEMS ci ON c.CartID = ci.CartID left join ITEM i ON ci.ItemID = i.ID WHERE c.UserID = 1 AND c.CartID = @cartID" ;
+                    var sql = $"SELECT c.CartID as cartID, ci.CartItemsTableID as cartItemsTableID, i.Markdown as ItemMarkdown, i.ID as itemID, i.[Name], i.[Description], ci.Price, ci.Quantity from CART c inner join CARTITEMS ci ON c.CartID = ci.CartID left join ITEM i ON ci.ItemID = i.ID WHERE c.UserID = 1 AND c.CartID = @cartID" ;
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.AddWithValue("@cartID", activeCartID); //Safer than using string interpolation to pass in the activeCartID
                     cmd.CommandText = sql;
@@ -272,13 +278,23 @@ namespace eCommerce.API.Database
 
                         while (reader.Read())
                         {
+                            decimal calcPrice = 0;
+                            double Markdown = ((double)reader["ItemMarkdown"])/100;
+                            if(Markdown > 0)
+                            {
+                                calcPrice = Math.Round((decimal)reader["Price"] - ((decimal)reader["Price"] * (decimal)Markdown),2);
+                            }
+                            else
+                            {
+                                calcPrice = (decimal)reader["Price"];
+                            }
                             items.Add(new ItemDTO
-                            { 
+                            {
                                 ID = (int)reader["ItemID"],
                                 Name = (string)reader["Name"],
                                 Description = (string)reader["Description"],
-                                Price = (decimal)reader["Price"],
-                                Quantity = (int)reader["Quantity"]
+                                Price = calcPrice,
+                                Quantity = (int)reader["Quantity"],
                             });
                         }
                         SqlClient.Close();
@@ -291,10 +307,12 @@ namespace eCommerce.API.Database
 
         public Item AddItemToCart(Item i, int activeCartID) //ADD FOR INDIVIDUAL ITEMS IN THE CART
         {
+            ItemDTO? updateItem = GetItemsForCart(activeCartID).FirstOrDefault(item => item.ID == i.ID); //Check if the item already exists in this cart
             using (SqlConnection SqlClient = new SqlConnection(@"Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
             {
-                if(i.ID != 0) //Check that an item is actually selected
+                if(updateItem == null) //If the item does not yet exist in the cart
                 {
+                    
                     using (SqlCommand cmd = SqlClient.CreateCommand())
                     {
                         var sql = $"CartItems.AddItemToCart"; //This is the sql code for inserting item
@@ -308,6 +326,27 @@ namespace eCommerce.API.Database
                         var id = new SqlParameter("CartItemsTableID", SqlDbType.Int); //Make the parameter into an L value
                         id.Direction = ParameterDirection.Output; //Return the value to me (the database makes the value since its an id)
                         cmd.Parameters.Add(id); //Add L value
+                        try
+                        {
+                            SqlClient.Open();
+                            cmd.ExecuteNonQuery();
+                            SqlClient.Close();
+                        }
+                        catch (Exception ex) { }
+                    }
+                }
+                else
+                {
+                    using (SqlCommand cmd = SqlClient.CreateCommand())
+                    {
+                        var sql = $"CartItems.UpdateItemInCart"; //This is the sql code for inserting item
+                        cmd.CommandText = sql; //Sets the text of the command to the InsertItem procedure sql code
+                        cmd.CommandType = System.Data.CommandType.StoredProcedure; //This is a stored procedure
+                        cmd.Parameters.Add(new SqlParameter("ItemID", i.ID));
+                        cmd.Parameters.Add(new SqlParameter("Quantity", i.Quantity + updateItem.Quantity));
+                        cmd.Parameters.Add(new SqlParameter("Price", i.Price));
+                        cmd.Parameters.Add(new SqlParameter("CartID", activeCartID));
+
                         try
                         {
                             SqlClient.Open();

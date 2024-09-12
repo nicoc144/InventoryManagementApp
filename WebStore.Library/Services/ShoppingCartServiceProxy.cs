@@ -27,8 +27,9 @@ namespace WebStore.Library.Services
             {
                 SelectedShoppingCartID = 1;
             }
+            CalculateTotalBeforeTax(carts);
+            CalculateTotalAfterTax(carts);
 
-            
         }
 
         private static ShoppingCartServiceProxy? instance;
@@ -66,6 +67,8 @@ namespace WebStore.Library.Services
                                                                           //The "await" keyword specifies to not move on until the webrequesthandler successfully retrieves the full inventory list (ie this line of code is done executing)
             var deserializedResult = JsonConvert.DeserializeObject<List<ShoppingCartDTO>>(result); //convert json blob into list of ItemDTO
             carts = deserializedResult?.ToList() ?? new List<ShoppingCartDTO>(); //return empty if connection to data center is lost
+            CalculateTotalBeforeTax(carts);
+            CalculateTotalAfterTax(carts);
             return carts;
         }
 
@@ -76,13 +79,6 @@ namespace WebStore.Library.Services
             return cartToAddOrUpdate;
         }
 
-        public async Task<ItemDTO> AddItemToCart(ItemDTO? item)
-        {
-            var result = await new WebRequestHandler().Post($"/Shop/{SelectedShoppingCartID}", item);
-            var itemToAdd = JsonConvert.DeserializeObject<ItemDTO>(result);
-            return itemToAdd;
-        }
-
         public async Task<ShoppingCartDTO> DeleteCart(int id) //deletes an item based on the id passed in
         {
             var result = await new WebRequestHandler().Delete($"/Shop/{id}");
@@ -90,10 +86,40 @@ namespace WebStore.Library.Services
             return cartToDelete;
         }
 
+        public async Task<ItemDTO> AddItemToCart(ItemDTO? item)
+        {
+            var result = await new WebRequestHandler().Post($"/Shop/{SelectedShoppingCartID}", item);
+            var itemToAdd = JsonConvert.DeserializeObject<ItemDTO>(result);
+            CalculateTotalBeforeTax(carts);
+            CalculateTotalAfterTax(carts);
+            return itemToAdd;
+        }
+
+        public decimal CalculateTotalBeforeTax(List<ShoppingCartDTO> cart)
+        {
+            decimal totalBefore = 0;
+            for(int i = 0; i < cart[SelectedShoppingCartID-1].Contents.Count; i++)
+            {
+                totalBefore = totalBefore + (cart[SelectedShoppingCartID-1].Contents[i].Quantity * cart[SelectedShoppingCartID-1].Contents[i].Price);
+            }
+            cart[SelectedShoppingCartID-1].ShoppingCartTotal = totalBefore;
+            return totalBefore;
+        }
+
+        public decimal CalculateTotalAfterTax(List<ShoppingCartDTO> cart)
+        {
+            decimal totalAfter = CalculateTotalBeforeTax(carts);
+            decimal calculateTax = totalAfter * (Decimal)(TaxForAllItems/100);
+            
+            cart[SelectedShoppingCartID - 1].ShoppingCartTotalAfterTax = Math.Round(totalAfter + calculateTax, 2);
+            return totalAfter;
+        }
+
         public static void SetTaxForAllItems(double d)
         {
             TaxForAllItems = d;
         }
+
 
         public static void SetCurrentShoppingCart(int id)
         {
