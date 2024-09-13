@@ -1,4 +1,4 @@
---This is the query for creating items for the inventory 
+--This is an SQL file for creating items for the inventory 
 --Please execute every step below to create the Database, Tables, and Procedures
 
 --[STEP 1] CREATE DATABASE
