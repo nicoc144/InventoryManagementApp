@@ -82,7 +82,7 @@
                     </Grid.RowDefinitions>
                     <Button
                         Grid.Row="0"
-                        Text="Add To Cart"
+                        Text="Add From Inventory"
                         Clicked="AddToCartClicked"
                         />
                     <Button

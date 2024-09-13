@@ -82,7 +82,16 @@ namespace WebStore.MAUI.ViewModels
             await ShoppingCartServiceProxy.Current.Get();
             NotifyPropertyChanged(nameof(Items));
             NotifyPropertyChanged(nameof(Carts));
-            NotifyPropertyChanged(nameof(CurrentCart));
+            NotifyPropertyChanged(nameof(CartViewModel.Contents));
+
+            //Reset the data context to make sure the UI refreshes the changes.
+            //Simply refreshing CurrentCart causes an error where
+            //the items in the shopping cart dont update until you leave
+            //the shop view and go back into the shop view.
+            CurrentCart = null; //Break the link between the UI and data
+            NotifyPropertyChanged(nameof(CurrentCart)); //Notify the UI that CurrentCart is Null
+            CurrentCart = Carts.FirstOrDefault(c => c.ShoppingCartID == ShoppingCartServiceProxy.SelectedShoppingCartID); //Set the current cart value to the current cart
+            NotifyPropertyChanged(nameof(CurrentCart)); //Notify the UI that CurrentCart isn't Null
         }
 
         public void UpdateItemView() //needed in order to set the values for the add to cart screen
