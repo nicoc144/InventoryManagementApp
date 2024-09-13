@@ -85,6 +85,9 @@
 	  <MauiXaml Update="Views\ShopManagementView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\SpecifyQuantToRemoveView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\SpecifyQuantView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

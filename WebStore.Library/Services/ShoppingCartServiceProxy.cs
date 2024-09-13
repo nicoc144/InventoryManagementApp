@@ -14,8 +14,18 @@ namespace WebStore.Library.Services
 {
     public class ShoppingCartServiceProxy //represents a list of shopping carts
     {
-        public static int SelectedShoppingCartID { get; private set; } //Keeps track of the shopping cart being added to currently
-                                                                       //Keep this on the client side
+        public static int SelectedShoppingCartID;
+        public static int _SelectedShoppingCartID
+        { //Keeps track of the shopping cart being added to currently
+            get
+            {
+                return SelectedShoppingCartID;
+            }
+            set
+            {
+                SelectedShoppingCartID = value;
+            }
+        } 
 
         //initilize a list of shopping carts
         private ShoppingCartServiceProxy()
@@ -88,13 +98,11 @@ namespace WebStore.Library.Services
             return itemToAdd;
         }
 
-        public static void SetCurrentShoppingCart(int id)
+        public async Task<ItemDTO> RemoveItemFromCart(ItemDTO? item)
         {
-            if (id == 0)
-            {
-                return;
-            }
-            SelectedShoppingCartID = id;
+            var result = await new WebRequestHandler().Post($"/Shop/DeleteCartItem/{SelectedShoppingCartID}", item);
+            var itemToAdd = JsonConvert.DeserializeObject<ItemDTO>(result);
+            return itemToAdd;
         }
     }
 }

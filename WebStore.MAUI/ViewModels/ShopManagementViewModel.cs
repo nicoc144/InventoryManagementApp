@@ -18,6 +18,7 @@ namespace WebStore.MAUI.ViewModels
         public ShopManagementViewModel()
         {
             ItemToBuy = new ItemViewModel();
+            ItemToRemove = new ItemViewModel();
             SetCartByID();
             RefreshItems();
         }
@@ -64,6 +65,7 @@ namespace WebStore.MAUI.ViewModels
 
         //private Item itemToBuy; //set this to private to ensure that we are not hitting the setter execpt for the first time
         public ItemViewModel ItemToBuy { get; set; } //"ItemVeiwModel" being set to "Item" was causing problems in the professor's example
+        public ItemViewModel ItemToRemove { get; set; } //For removing items from the shopping cart
 
         //public Item ItemToBuy { get; set; } //similar to selectedItem in inventorymanagementview code behind
 
@@ -77,7 +79,6 @@ namespace WebStore.MAUI.ViewModels
         public async void RefreshItems()
         {
             await ItemServiceProxy.Current.Get();
-            await ShoppingCartServiceProxy.Current.Get();
             await ShoppingCartServiceProxy.Current.Get();
             NotifyPropertyChanged(nameof(Items));
             NotifyPropertyChanged(nameof(Carts));
@@ -96,5 +97,13 @@ namespace WebStore.MAUI.ViewModels
                                                                                     //(Sends the item ID to QueryProperty)
         }
 
+        public void RemoveItemFromCart()
+        {
+            if (ItemToRemove?.Item == null)
+            {
+                return;
+            }
+            Shell.Current.GoToAsync($"//RemoveFromCart?cartRemoveItemID={ItemToRemove.Item.ID}");
+        }
     }
 }

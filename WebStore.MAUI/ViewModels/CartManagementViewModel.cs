@@ -41,7 +41,7 @@ namespace WebStore.MAUI.ViewModels
             {
                 return;
             }
-            ShoppingCartServiceProxy.SetCurrentShoppingCart(SelectedActiveCart.ShoppingCartID);
+            ShoppingCartServiceProxy.SelectedShoppingCartID = SelectedActiveCart.ShoppingCartID;
             RefreshCarts();
         }
 

@@ -50,5 +50,10 @@
         ContentTemplate="{DataTemplate views:MassImportView}"
         Route="MassImportView" />
 
+    <ShellContent  
+        Title="Remove From Cart"
+        ContentTemplate="{DataTemplate views:SpecifyQuantToRemoveView}"
+        Route="RemoveFromCart" />
+
 
 </Shell>

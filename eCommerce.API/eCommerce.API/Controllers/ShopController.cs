@@ -32,7 +32,7 @@ namespace eCommerce.API.Controllers
             return await new ShopEC().AddItemToCart(i, id);
         }
 
-        [HttpPost("/DeleteCartItem/{id}")]
+        [HttpPost("/Shop/DeleteCartItem/{id}")]
         public async Task<ItemDTO> DeleteOrReduceItem([FromBody] ItemDTO i, int id)
         {
             return await new ShopEC().DeleteOrReduceItem(i, id);

@@ -31,4 +31,9 @@ public partial class ShopManagementView : ContentPage
     {
         Shell.Current.GoToAsync("//CartManagementView");
     }
+
+    private void RemoveFromCartClicked(object sender, EventArgs e)
+    {
+        (BindingContext as ShopManagementViewModel).RemoveItemFromCart();
+    }
 }
