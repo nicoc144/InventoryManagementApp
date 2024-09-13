@@ -74,6 +74,7 @@ namespace WebStore.Library.Services
                                                                           //The "await" keyword specifies to not move on until the webrequesthandler successfully retrieves the full inventory list (ie this line of code is done executing)
             var deserializedResult = JsonConvert.DeserializeObject<List<ShoppingCartDTO>>(result); //convert json blob into list of ItemDTO
             carts = deserializedResult?.ToList() ?? new List<ShoppingCartDTO>(); //return empty if connection to data center is lost
+
             return carts;
         }
 

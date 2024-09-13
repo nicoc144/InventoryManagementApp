@@ -43,18 +43,18 @@
                 />
             <Button
                 Grid.Column="1"
-                Text="Mass Import Items"
-                Clicked="MassImportClicked"
-                />
-            <Button
-                Grid.Column="2"
                 Text="Edit Selected Item"
                 Clicked="EditClicked"
                 />
             <Button
-                Grid.Column="3"
+                Grid.Column="2"
                 Text="Delete Selected Item"
                 Clicked="DeleteClicked"
+                />
+            <Button
+                Grid.Column="3"
+                Text="Mass Import Items"
+                Clicked="MassImportClicked"
                 />
         </Grid>
         <Button
