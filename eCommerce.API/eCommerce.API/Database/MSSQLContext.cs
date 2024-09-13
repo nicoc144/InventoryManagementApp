@@ -307,7 +307,7 @@ namespace eCommerce.API.Database
             return items;
         }
 
-        public Item AddItemToCart(Item i, int activeCartID) //ADD FOR INDIVIDUAL ITEMS IN THE CART
+        public Item AddItemToCart(Item i, int activeCartID) //ADD / UPDATE FOR INDIVIDUAL ITEMS IN THE CART
         {
             ItemDTO? updateItem = GetItemsForCart(activeCartID).FirstOrDefault(item => item.ID == i.ID); //Check if the item already exists in this cart
             using (SqlConnection SqlClient = new SqlConnection(@"Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
@@ -345,7 +345,7 @@ namespace eCommerce.API.Database
                         cmd.CommandText = sql; //Sets the text of the command to the InsertItem procedure sql code
                         cmd.CommandType = System.Data.CommandType.StoredProcedure; //This is a stored procedure
                         cmd.Parameters.Add(new SqlParameter("ItemID", i.ID));
-                        cmd.Parameters.Add(new SqlParameter("Quantity", i.Quantity + updateItem.Quantity));
+                        cmd.Parameters.Add(new SqlParameter("Quantity", i.Quantity));
                         cmd.Parameters.Add(new SqlParameter("Price", i.Price));
                         cmd.Parameters.Add(new SqlParameter("CartID", activeCartID));
 
@@ -360,6 +360,32 @@ namespace eCommerce.API.Database
                 }
             }
             return i;
+        }
+
+        public Item DeleteCartItem(int itemID, int activeCartID) //DELETE FOR ITEMS IN CART
+        {
+            ItemDTO returnItem = GetItemsForCart(activeCartID).FirstOrDefault(i => i.ID == itemID); //Find the item in the list
+
+            using (SqlConnection SqlClient = new SqlConnection(@"Server=DESKTOP-52M94CU;Database=eCommerce;Trusted_Connection=yes;TrustServerCertificate=True"))
+            {
+                using (SqlCommand cmd = SqlClient.CreateCommand())
+                {
+                    var sql = $"CartItems.DeleteItem";
+                    cmd.CommandText = sql;
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("CartItemsTableID", itemID)); //Set the id you passed in to be the @itemID on the database
+
+                    try
+                    {
+                        SqlClient.Open();
+                        cmd.ExecuteNonQuery();
+                        SqlClient.Close();
+
+                    }
+                    catch (Exception ex) { }
+                }
+                return new Item(returnItem);
+            }
         }
     }
 }

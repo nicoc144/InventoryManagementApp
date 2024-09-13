@@ -34,7 +34,7 @@ namespace eCommerce.API.EC
             //return new ItemDTO(Filebase.Current.AddOrUpdate(new Item(i)));
         }
 
-        public async Task<ItemDTO?> Delete(int id)
+        public async Task<ItemDTO> Delete(int id)
         {
             //Database storage
             if (new MSSQLContext().GetItems().FirstOrDefault(item => item.ID == id) == null)

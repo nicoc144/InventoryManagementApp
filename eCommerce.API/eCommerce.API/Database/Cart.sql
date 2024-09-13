@@ -108,6 +108,14 @@ BEGIN
 	END
 END
 
+--[STEP 13] CREATE A DELETE FOR AN ITEM IN THE CART
+CREATE PROCEDURE CartItems.DeleteItem
+@CartItemsTableID int
+AS
+BEGIN
+	DELETE CARTITEMS where CartItemsTableID = @CartItemsTableID
+END
+
 ----------------------------
 --ADDITIONAL FUNCTIONALITY--
 ----------------------------

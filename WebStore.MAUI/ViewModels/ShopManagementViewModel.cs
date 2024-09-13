@@ -76,8 +76,9 @@ namespace WebStore.MAUI.ViewModels
         //for NotifyPropertyChanged, you pass in the name of a property that has changed and the property refresh
         public async void RefreshItems()
         {
-            await ShoppingCartServiceProxy.Current.Get();
             await ItemServiceProxy.Current.Get();
+            await ShoppingCartServiceProxy.Current.Get();
+            await ShoppingCartServiceProxy.Current.Get();
             NotifyPropertyChanged(nameof(Items));
             NotifyPropertyChanged(nameof(Carts));
             NotifyPropertyChanged(nameof(CurrentCart));

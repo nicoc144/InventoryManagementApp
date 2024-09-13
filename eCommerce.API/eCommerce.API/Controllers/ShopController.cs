@@ -32,6 +32,12 @@ namespace eCommerce.API.Controllers
             return await new ShopEC().AddItemToCart(i, id);
         }
 
+        [HttpPost("/DeleteCartItem/{id}")]
+        public async Task<ItemDTO> DeleteOrReduceItem([FromBody] ItemDTO i, int id)
+        {
+            return await new ShopEC().DeleteOrReduceItem(i, id);
+        }
+
         [HttpDelete("{id}")]
         public async Task<ShoppingCartDTO> Delete(int id)
         {
