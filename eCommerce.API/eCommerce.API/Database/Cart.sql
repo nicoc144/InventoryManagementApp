@@ -1,4 +1,4 @@
---This is the query for creating shopping carts and users
+--This is an SQL file for creating shopping carts and users
 --If you haven't completed the steps in item.sql yet, please do so now before proceeding
 
 --[STEP 1] CREATE THE TABLE FOR USERS
