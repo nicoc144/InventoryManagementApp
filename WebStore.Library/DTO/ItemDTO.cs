@@ -17,8 +17,7 @@ namespace WebStore.Library.DTO
         public int Quantity { get; set; }
         public bool IsBOGO { get; set; } //t/f is the item buy one get one
         public double Markdown { get; set; }
-        public decimal TotalForThisItem { get; set; } //In order for BOGO to work proplerly, each item in the cart needs to keep
-                                                      //track of it's personal total
+        
         public ItemDTO(Item i) //Maps Item into ItemDTO
         {
             Name = i.Name;
@@ -28,7 +27,6 @@ namespace WebStore.Library.DTO
             Quantity = i.Quantity;
             IsBOGO = i.IsBOGO;
             Markdown = i.Markdown;
-            TotalForThisItem = i.TotalForThisItem;
              
         }
 
@@ -41,7 +39,6 @@ namespace WebStore.Library.DTO
             Quantity = i.Quantity;
             IsBOGO = i.IsBOGO;
             Markdown = i.Markdown;
-            TotalForThisItem = i.TotalForThisItem;
         }
 
         public ItemDTO()

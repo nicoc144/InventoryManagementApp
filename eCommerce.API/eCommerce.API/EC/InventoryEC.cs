@@ -4,7 +4,7 @@ using WebStore.Library.Models;
 
 namespace eCommerce.API.EC
 {
-    public class InventoryEC //The enterprise contoller does all of the "heavy lifting," gets specificly used by the controller
+    public class InventoryEC //the enterprise contoller does all of the "heavy lifting," called by the controller and handles the buisness logic
     {
 
         public InventoryEC() {}
@@ -34,7 +34,7 @@ namespace eCommerce.API.EC
             //return new ItemDTO(Filebase.Current.AddOrUpdate(new Item(i)));
         }
 
-        public async Task<ItemDTO?> Delete(int id)
+        public async Task<ItemDTO> Delete(int id)
         {
             //Database storage
             if (new MSSQLContext().GetItems().FirstOrDefault(item => item.ID == id) == null)

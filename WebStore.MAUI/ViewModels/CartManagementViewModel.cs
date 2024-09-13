@@ -19,8 +19,9 @@ namespace WebStore.MAUI.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        public void RefreshItems()
+        public async void RefreshCarts()
         {
+            await ShoppingCartServiceProxy.Current.Get();
             NotifyPropertyChanged(nameof(Carts));
         }
 
@@ -40,11 +41,11 @@ namespace WebStore.MAUI.ViewModels
             {
                 return;
             }
-            ShoppingCartServiceProxy.SetCurrentShoppingCart(SelectedActiveCart.ShoppingCartID);
-            RefreshItems();
+            ShoppingCartServiceProxy.SelectedShoppingCartID = SelectedActiveCart.ShoppingCartID;
+            RefreshCarts();
         }
 
-        public void UpdateCart()
+        public async void UpdateCart()
         {
             if (SelectedActiveCart?.ShoppingCart == null)
             {
@@ -53,7 +54,18 @@ namespace WebStore.MAUI.ViewModels
 
             Shell.Current.GoToAsync($"//CartView?cartID={SelectedActiveCart.ShoppingCart.ShoppingCartID}");
 
-            ShoppingCartServiceProxy.Current.AddOrUpdateCartDetails(SelectedActiveCart.ShoppingCart);
+            await ShoppingCartServiceProxy.Current.AddOrUpdateCartDetails(SelectedActiveCart.ShoppingCart);
         }
+
+        public async void DeleteShoppingCart()
+        {
+            if (SelectedActiveCart?.ShoppingCart == null)
+            {
+                return;
+            }
+            await ShoppingCartServiceProxy.Current.DeleteCart(SelectedActiveCart.ShoppingCart.ShoppingCartID); //deletes passing in the id of the item
+            RefreshCarts(); //Need to add refresh here or page doesn't update
+        }
+
     }
 }

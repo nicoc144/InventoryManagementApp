@@ -40,11 +40,6 @@ public partial class InventoryManagementView : ContentPage
         (BindingContext as InventoryManagementViewModel).DeleteItem();
     }
 
-    private void ConfigTaxClicked(object sender, EventArgs e)
-    {
-        Shell.Current.GoToAsync("//TaxConfig");
-    }
-
     private void MassImportClicked(object sender, EventArgs e)
     {
         Shell.Current.GoToAsync("//MassImportView");

@@ -69,7 +69,7 @@ namespace WebStore.Library.Services
         //delete web call, deletes item from json blob with specified id
         public async Task<ItemDTO> Delete(int id) //deletes an item based on the id passed in
         {
-            var result = await new WebRequestHandler().Delete($"/{id}");
+            var result = await new WebRequestHandler().Delete($"/Inventory/{id}");
             var itemToDelete = JsonConvert.DeserializeObject<ItemDTO>(result);
             return itemToDelete;
         }

@@ -18,8 +18,9 @@ namespace WebStore.MAUI.ViewModels
         public ShopManagementViewModel()
         {
             ItemToBuy = new ItemViewModel();
-            SelectedCart = new CartViewModel();
+            ItemToRemove = new ItemViewModel();
             SetCartByID();
+            RefreshItems();
         }
 
         //This is the inventory, singleton list for shop view DO NOT MODIFY!!!
@@ -62,25 +63,11 @@ namespace WebStore.MAUI.ViewModels
             }
         }
 
-        public double Tax
-        { 
-            get
-            {
-                return ShoppingCartServiceProxy.TaxForAllItems;
-            }
-            set
-            {
-                ShoppingCartServiceProxy.SetTaxForAllItems(value);
-            }
-        }
-
         //private Item itemToBuy; //set this to private to ensure that we are not hitting the setter execpt for the first time
         public ItemViewModel ItemToBuy { get; set; } //"ItemVeiwModel" being set to "Item" was causing problems in the professor's example
-
-        public CartViewModel SelectedCart { get; set; }
+        public ItemViewModel ItemToRemove { get; set; } //For removing items from the shopping cart
 
         //public Item ItemToBuy { get; set; } //similar to selectedItem in inventorymanagementview code behind
-
 
         public event PropertyChangedEventHandler? PropertyChanged;
         private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
@@ -89,12 +76,22 @@ namespace WebStore.MAUI.ViewModels
         }
 
         //for NotifyPropertyChanged, you pass in the name of a property that has changed and the property refresh
-        public void RefreshItems()
+        public async void RefreshItems()
         {
+            await ItemServiceProxy.Current.Get();
+            await ShoppingCartServiceProxy.Current.Get();
             NotifyPropertyChanged(nameof(Items));
             NotifyPropertyChanged(nameof(Carts));
-            NotifyPropertyChanged(nameof(CurrentCart));
-            NotifyPropertyChanged(nameof(Tax));
+            NotifyPropertyChanged(nameof(CartViewModel.Contents));
+
+            //Reset the data context to make sure the UI refreshes the changes.
+            //Simply refreshing CurrentCart causes an error where
+            //the items in the shopping cart dont update until you leave
+            //the shop view and go back into the shop view.
+            CurrentCart = null; //Break the link between the UI and data
+            NotifyPropertyChanged(nameof(CurrentCart)); //Notify the UI that CurrentCart is Null
+            CurrentCart = Carts.FirstOrDefault(c => c.ShoppingCartID == ShoppingCartServiceProxy.SelectedShoppingCartID); //Set the current cart value to the current cart
+            NotifyPropertyChanged(nameof(CurrentCart)); //Notify the UI that CurrentCart isn't Null
         }
 
         public void UpdateItemView() //needed in order to set the values for the add to cart screen
@@ -109,5 +106,13 @@ namespace WebStore.MAUI.ViewModels
                                                                                     //(Sends the item ID to QueryProperty)
         }
 
+        public void RemoveItemFromCart()
+        {
+            if (ItemToRemove?.Item == null)
+            {
+                return;
+            }
+            Shell.Current.GoToAsync($"//RemoveFromCart?cartRemoveItemID={ItemToRemove.Item.ID}");
+        }
     }
 }

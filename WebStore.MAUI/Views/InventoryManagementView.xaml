@@ -35,29 +35,31 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-        <Button
-            Text="Add New Item"
-            Clicked="AddClicked"
-            />
-        <Button
-            Text="Mass Import Items"
-            Clicked="MassImportClicked"
-            />
-        <Button
-            Text="Edit Selected Item"
-            Clicked="EditClicked"
-            />
-        <Button
-            Text="Configure Tax Rate"
-            Clicked="ConfigTaxClicked"
-            />
-        <Button
-            Text="Delete Selected Item"
-            Clicked="DeleteClicked"
-            />
+        <Grid ColumnDefinitions="*,*,*,*">
+            <Button
+                Grid.Column="0"
+                Text="Add New Item"
+                Clicked="AddClicked"
+                />
+            <Button
+                Grid.Column="1"
+                Text="Edit Selected Item"
+                Clicked="EditClicked"
+                />
+            <Button
+                Grid.Column="2"
+                Text="Delete Selected Item"
+                Clicked="DeleteClicked"
+                />
+            <Button
+                Grid.Column="3"
+                Text="Mass Import Items"
+                Clicked="MassImportClicked"
+                />
+        </Grid>
         <Button
             Text="Back"
             Clicked="InvBack"
-            />
+        />
     </VerticalStackLayout>
 </ContentPage>

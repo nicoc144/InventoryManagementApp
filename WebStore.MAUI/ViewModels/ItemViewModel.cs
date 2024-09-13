@@ -113,21 +113,6 @@ namespace WebStore.MAUI.ViewModels
             }
         }
 
-        public decimal TotalForThisItem
-        {
-            get
-            {
-                return Item?.TotalForThisItem ?? 0m;
-            }
-            set
-            {
-                if (Item != null)
-                {
-                    Item.TotalForThisItem = value;
-                }
-            }
-        }
-
         public double Markdown
         {
             get
@@ -223,7 +208,8 @@ namespace WebStore.MAUI.ViewModels
             SetupCommands(); //calls the function to set up the commands
         }
 
-        public ItemViewModel(int id, string cloneThisID) //This constructor takes an existing item, makes a clone of it
+        public ItemViewModel(int id, string cloneThisIDInventory) //For adding an item to inventory
+                                                         //This constructor takes an existing item, makes a clone of it
                                                          //and then sets the quantity to 1 (assuming the user by default
                                                          //would only want to buy one item. Need to make a clone because
                                                          //if you dont the item you return will be linked to the item
@@ -233,6 +219,15 @@ namespace WebStore.MAUI.ViewModels
             ItemDTO clonedItem = new ItemDTO(existingItem); //use the copy constructor in Item.cs to create a copy of the existing item
             clonedItem.Quantity = 1; //set the cloned item quantity to 1, assuming that the user would just want to add one item to their shopping cart
             Item = clonedItem; 
+        }
+
+        public ItemViewModel(int id, int cloneThisIDInventory) //For removing an item from shopping cart
+        {
+            int activeCart = ShoppingCartServiceProxy._SelectedShoppingCartID; //This is the currently active cart
+            ItemDTO existingItem = ShoppingCartServiceProxy.Current?.Carts[activeCart - 1]?.Contents?.FirstOrDefault(i => i.ID == id); //we look through all of the existing items in the active cart
+            ItemDTO clonedItem = new ItemDTO(existingItem); //use the copy constructor in Item.cs to create a copy of the existing item
+            clonedItem.Quantity = 1; //set the cloned item quantity to 1, assuming that the user would just want to add one item to their shopping cart
+            Item = clonedItem;
 
         }
 
@@ -275,10 +270,12 @@ namespace WebStore.MAUI.ViewModels
  
         public void AddItemToCart()  //Adds or updates Item in cart
         {
-            ShoppingCartServiceProxy.Current.AddToCart(Item);
+            ShoppingCartServiceProxy.Current.AddItemToCart(Item);
         }
 
-
-
+        public void RemoveItemFromCart()
+        {
+            ShoppingCartServiceProxy.Current.RemoveItemFromCart(Item);
+        }
     }
 }

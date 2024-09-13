@@ -16,7 +16,7 @@ namespace WebStore.MAUI.ViewModels
 
         public ShoppingCartDTO? ShoppingCart;
 
-        public string ShoppingCartName
+        public string ShoppingCartName //Sets the name for the Shopping Cart
         {
             get
             {
@@ -31,7 +31,7 @@ namespace WebStore.MAUI.ViewModels
             }
         }
 
-        public int ShoppingCartID //sets the ID for the item
+        public int ShoppingCartID //sets the ID for the ShoppingCart
         {
             get
             {
@@ -59,6 +59,15 @@ namespace WebStore.MAUI.ViewModels
             get
             {
                 return ShoppingCart.ShoppingCartTotalAfterTax;
+
+            }
+        }
+
+        public double ShoppingCartTax
+        {
+            get
+            {
+                return ShoppingCart.ShoppingCartTax;
 
             }
         }

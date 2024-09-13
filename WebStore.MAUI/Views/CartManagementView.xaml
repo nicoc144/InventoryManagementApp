@@ -36,6 +36,9 @@
                 Text="Edit Cart Name"
                 Clicked="EditShoppingCartNameClicked"/>
         <Button
+                Text="Delete Cart"
+                Clicked="DeleteShoppingCartClicked"/>
+        <Button
                 Text="Back"
                 Clicked="CartBack"/>
     </VerticalStackLayout>

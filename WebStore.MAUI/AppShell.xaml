@@ -36,11 +36,6 @@
         Route="AddToCart" />
 
     <ShellContent
-        Title="Tax Configuration"
-        ContentTemplate="{DataTemplate views:TaxConfigView}"
-        Route="TaxConfig" />
-
-    <ShellContent
         Title="Cart Management View"
         ContentTemplate="{DataTemplate views:CartManagementView}"
         Route="CartManagementView" />
@@ -54,6 +49,11 @@
         Title="Mass Import View"
         ContentTemplate="{DataTemplate views:MassImportView}"
         Route="MassImportView" />
+
+    <ShellContent  
+        Title="Remove From Cart"
+        ContentTemplate="{DataTemplate views:SpecifyQuantToRemoveView}"
+        Route="RemoveFromCart" />
 
 
 </Shell>
