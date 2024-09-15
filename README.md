@@ -37,7 +37,7 @@ Select the dll file (if the file is empty make sure you have built WebStore.Libr
 
 ## How to set up the database: <br />
 Firstly, if you do not want to use a database there is an option to create and store files on your local machine.
-To use this you would need to create a file on your (C:) drive called "temp," and inside that file create a file called "Items."
+To use this you would need to create a file on your (C:) drive called "temp", and inside that file create a file called "Items".
 This is where the items will be stored.
 Now in the "InventoryEC.cs" file you will need to uncomment the code which calls Filebase and Comment out the code which calls MSSQLContext.
 **This only works for inventory, not shop.**<br />
